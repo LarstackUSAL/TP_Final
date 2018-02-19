@@ -4,7 +4,7 @@ public class Pasos {
 
 	private String codigoProducto;
 	private MateriasPrimas materiaPrima;
-	private int cantidad;
+	private int cantidadMateriaPrima;
 	
 	public String getCodigoProducto() {
 		return codigoProducto;
@@ -12,11 +12,11 @@ public class Pasos {
 	public void setCodigoProducto(String codigoProducto) {
 		this.codigoProducto = codigoProducto;
 	}
-	public int getCantidad() {
-		return cantidad;
+	public int getCantidadMateriaPrima() {
+		return cantidadMateriaPrima;
 	}
-	public void setCantidad(int cantidad) {
-		this.cantidad = cantidad;
+	public void setCantidadMateriaPrima(int cantidadMateriaPrima) {
+		this.cantidadMateriaPrima = cantidadMateriaPrima;
 	}
 	public MateriasPrimas getMateriaPrima() {
 		return materiaPrima;

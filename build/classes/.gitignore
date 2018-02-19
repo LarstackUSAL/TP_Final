@@ -1,4 +1,6 @@
 /controllers/
+/exceptions/
+/interfaces/
 /main/
 /model/
 /utils/

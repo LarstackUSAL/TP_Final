@@ -2,7 +2,7 @@ package model.dto;
 
 import java.util.Calendar;
 
-public class PasoAsignado {
+public class PasosAsignados {
 
 	private Pasos paso;
 	private Usuarios usuario;
