@@ -139,19 +139,31 @@ public class OrdenesTrabajosDao {
 					
 					OrdenesTrabajos ot = new OrdenesTrabajos();
 					
+					Calendar calFechaAlta = Calendar.getInstance();
+					calFechaAlta.setTimeInMillis(rs.getTimestamp("fecha_alta").getTime());
+					
+					Calendar calFechaEstimada = Calendar.getInstance();
+					calFechaEstimada.setTimeInMillis(rs.getTimestamp("fecha_estimada_finalizacion").getTime());
+					
+					Calendar calFechaFinalizacion = Calendar.getInstance();
+					calFechaFinalizacion.setTimeInMillis(rs.getTimestamp("fecha_finalizacion").getTime());
+
 					ot.setNumero(rs.getString("numero"));
-					ot.setFechaAlta(rs.getTimestamp("fecha_alta"));
-					"codigo_producto");
-					"cantidad_requerida");
-					"fecha_estimada_finalizacion");
-					"fecha_finalizacion");
-					"descripcion");
-					"es_urgente");
+					ot.setFechaAlta(calFechaAlta);
+					ot.setCodigoProducto(rs.getString("codigo_producto"));
+					ot.setCantidadRequerida(rs.getInt("cantidad_requerida"));
+					ot.setFechaEstimadaFinalizacion(calFechaEstimada);
+					ot.setFechaFinalizacion(calFechaFinalizacion);
+					ot.setDescripcion(rs.getString("descripcion"));
+					ot.setEsUrgente(rs.getBoolean("es_urgente"));
+					
+					ordenesTrabajosList.add(ot);
 				}
 			}
 		} catch (SQLException e) {
 
 			e.printStackTrace();
+
 		}finally {
 			
 			DbConnection.cerrarConexion(rs, stmt, conn);

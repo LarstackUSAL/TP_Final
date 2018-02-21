@@ -2,24 +2,17 @@ package model.dto;
 
 import java.util.Calendar;
 
-public class PasosAsignados {
+public class PasosAsignados extends Pasos {
 
-	private Pasos paso;
-	private Usuarios usuario;
+	private Operarios operario;
 	private boolean esFinalizado;
 	private Calendar fechaFinalizacion;
 	
-	public Pasos getPaso() {
-		return paso;
+	public Usuarios getOperario() {
+		return operario;
 	}
-	public void setPaso(Pasos paso) {
-		this.paso = paso;
-	}
-	public Usuarios getUsuario() {
-		return usuario;
-	}
-	public void setUsuario(Usuarios usuario) {
-		this.usuario = usuario;
+	public void setOperario(Operarios operario) {
+		this.operario = operario;
 	}
 	public boolean isEsFinalizado() {
 		return esFinalizado;
