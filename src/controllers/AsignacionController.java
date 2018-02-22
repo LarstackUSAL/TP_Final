@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import model.dao.OrdenesTrabajosDao;
+import model.dao.PasosDao;
 import model.dto.Operarios;
 import model.dto.OrdenesTrabajos;
 import model.dto.Pasos;
@@ -36,7 +37,8 @@ public class AsignacionController implements ActionListener {
 
 			PasosDao pasosDao = new PasosDao();
 
-			ArrayList<Pasos> pasosList = pasosDao.getPasosByOTId();
+			OrdenesTrabajos ot = (OrdenesTrabajos) this.asignacionView.getNumerosOTCombo().getSelectedItem();
+			ArrayList<Pasos> pasosList = pasosDao.getPasosByNumeroOT(ot.getNumero());
 			ArrayList<Operarios> operariosList = pasosDao.getOperarios();
 
 			this.asignacionView.addElementos(pasosList, operariosList);

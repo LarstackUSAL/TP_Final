@@ -6,12 +6,10 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
 
 import controllers.AsignacionController;
 import model.dto.Operarios;
+import model.dto.OrdenesTrabajos;
 import model.dto.Pasos;
 import utils.Constants;
 
@@ -36,12 +34,9 @@ public class AsignacionView {
 		ventana.setSize(Constants.VENTANA_ANCHO, Constants.VENTANA_ALTO);
 		ventana.setLayout(Constants.ESTILO_LAYOUT);
 		ventana.setLocationRelativeTo(null);
-		//descomentar
-//		OrdenesTrabajos[] OTVector = this.asignacionController.getOTPendientes();
-		
-		//testing
-		String[] OTVector = {"orden1","orden2"};
-		
+
+		OrdenesTrabajos[] OTVector = this.asignacionController.getOTPendientes();
+
 		numerosOtLabel = new JLabel("Numeros OT");
 		numerosOTCombo = new JComboBox(OTVector);
 		seleccionarBtn = new JButton("Seleccionar");
@@ -56,19 +51,6 @@ public class AsignacionView {
 	}
 
 	public void addElementos(ArrayList<Pasos> pasosList, ArrayList<Operarios> operariosList) {
-
-		//testing
-		pasosList = new ArrayList<>();
-		pasosList.add(new Pasos(null,null,0,"paso 1"));
-		pasosList.add(new Pasos(null,null,0,"paso 2"));
-		pasosList.add(new Pasos(null,null,0,"paso 3"));
-		//testing
-		operariosList = new ArrayList<>();
-		operariosList.add(new Operarios("nombre1", "apellido1", null));
-		operariosList.add(new Operarios("nombre2", "apellido2", null));
-		operariosList.add(new Operarios("nombre3", "apellido3", null));
-		operariosList.add(new Operarios("nombre4", "apellido4", null));
-		/////////
 
 		tareasLabelList = new ArrayList<>();
 		operariosComboList = new ArrayList<>();
@@ -88,6 +70,70 @@ public class AsignacionView {
 		ventana.add(asignarBtn);
 		
 		ventana.setVisible(true);
+	}
+
+	public AsignacionController getAsignacionController() {
+		return asignacionController;
+	}
+
+	public void setAsignacionController(AsignacionController asignacionController) {
+		this.asignacionController = asignacionController;
+	}
+
+	public JFrame getVentana() {
+		return ventana;
+	}
+
+	public void setVentana(JFrame ventana) {
+		this.ventana = ventana;
+	}
+
+	public JLabel getNumerosOtLabel() {
+		return numerosOtLabel;
+	}
+
+	public void setNumerosOtLabel(JLabel numerosOtLabel) {
+		this.numerosOtLabel = numerosOtLabel;
+	}
+
+	public JComboBox getNumerosOTCombo() {
+		return numerosOTCombo;
+	}
+
+	public void setNumerosOTCombo(JComboBox numerosOTCombo) {
+		this.numerosOTCombo = numerosOTCombo;
+	}
+
+	public JButton getSeleccionarBtn() {
+		return seleccionarBtn;
+	}
+
+	public void setSeleccionarBtn(JButton seleccionarBtn) {
+		this.seleccionarBtn = seleccionarBtn;
+	}
+
+	public JButton getAsignarBtn() {
+		return asignarBtn;
+	}
+
+	public void setAsignarBtn(JButton asignarBtn) {
+		this.asignarBtn = asignarBtn;
+	}
+
+	public ArrayList<JLabel> getTareasLabelList() {
+		return tareasLabelList;
+	}
+
+	public void setTareasLabelList(ArrayList<JLabel> tareasLabelList) {
+		this.tareasLabelList = tareasLabelList;
+	}
+
+	public ArrayList<JComboBox> getOperariosComboList() {
+		return operariosComboList;
+	}
+
+	public void setOperariosComboList(ArrayList<JComboBox> operariosComboList) {
+		this.operariosComboList = operariosComboList;
 	}
 
 }

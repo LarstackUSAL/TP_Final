@@ -4,7 +4,6 @@ public class MateriasPrimas {
 
 	private String codigo;
 	private String descripcion;
-	private int stock;
 	
 	public MateriasPrimas() {}
 	
@@ -19,13 +18,5 @@ public class MateriasPrimas {
 	}
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
-	}
-	public int getStock() {
-		return stock;
-	}
-	public void setStock(int stock) {
-		this.stock = stock;
-	}
-	
-	
+	}	
 }

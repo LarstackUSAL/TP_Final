@@ -1,38 +1,33 @@
 package model.dto;
 
+import java.util.ArrayList;
+
 public class Pasos {
 
-	private String codigoProducto;
-	private MateriasPrimas materiaPrima;
-	private int cantidadMateriaPrima;
+	private Productos producto;
 	private String descripcion;
-	
+	private ArrayList<MateriasPrimasCantidad> materiasPrimas;
+
 	public Pasos() {};
-	public Pasos(String codigoProducto, MateriasPrimas materiaPrima, int cantidadMateriaPrima, String descripcion) {
+
+	public Pasos(Productos producto, ArrayList<MateriasPrimasCantidad> materiasPrimas, String descripcion) {
 		super();
-		this.codigoProducto = codigoProducto;
-		this.materiaPrima = materiaPrima;
-		this.cantidadMateriaPrima = cantidadMateriaPrima;
+		this.producto = producto;
+		this.materiasPrimas = materiasPrimas;
 		this.descripcion = descripcion;
 	}
 
-	public String getCodigoProducto() {
-		return codigoProducto;
+	public Productos getProducto() {
+		return producto;
 	}
-	public void setCodigoProducto(String codigoProducto) {
-		this.codigoProducto = codigoProducto;
+	public void setProducto(Productos producto) {
+		this.producto = producto;
 	}
-	public int getCantidadMateriaPrima() {
-		return cantidadMateriaPrima;
+	public ArrayList<MateriasPrimasCantidad> getMateriasPrimas() {
+		return materiasPrimas;
 	}
-	public void setCantidadMateriaPrima(int cantidadMateriaPrima) {
-		this.cantidadMateriaPrima = cantidadMateriaPrima;
-	}
-	public MateriasPrimas getMateriaPrima() {
-		return materiaPrima;
-	}
-	public void setMateriaPrima(MateriasPrimas materiaPrima) {
-		this.materiaPrima = materiaPrima;
+	public void setMateriasPrimas(ArrayList<MateriasPrimasCantidad> materiasPrimas) {
+		this.materiasPrimas = materiasPrimas;
 	}
 	public String getDescripcion() {
 		return descripcion;
@@ -40,6 +35,4 @@ public class Pasos {
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
-	
-	
 }
