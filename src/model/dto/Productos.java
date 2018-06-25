@@ -2,22 +2,22 @@ package model.dto;
 
 public class Productos {
 
-	String codigoProducto;
+	String codigo;
 	String descripcion;
 	
 	public Productos() {}
 
-	public Productos(String codigoProducto, String descripcion) {
+	public Productos(String codigo, String descripcion) {
 		super();
-		this.codigoProducto = codigoProducto;
+		this.codigo = codigo;
 		this.descripcion = descripcion;
 	}
 
-	public String getCodigoProducto() {
-		return codigoProducto;
+	public String getCodigo() {
+		return codigo;
 	}
-	public void setCodigoProducto(String codigoProducto) {
-		this.codigoProducto = codigoProducto;
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
 	}
 	public String getDescripcion() {
 		return descripcion;

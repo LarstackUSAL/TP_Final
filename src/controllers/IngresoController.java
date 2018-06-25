@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.util.Calendar;
 
 import model.dao.OrdenesTrabajosDao;
+import model.dao.ProductosDao;
 import model.dto.OrdenesTrabajos;
 import utils.Utilities;
 import views.IngresoView;
@@ -25,8 +26,9 @@ public class IngresoController implements ActionListener {
 		if(e.getActionCommand().equals("Ingresar")) {
 			
 			boolean persistenciaOk = false;
+			boolean validacionOk = ingresoView.validar();
 			
-			if(ingresoView.validar()){
+			if(validacionOk){
 				
 				persistenciaOk = this.guardarOT();
 			}
@@ -34,7 +36,8 @@ public class IngresoController implements ActionListener {
 			if(persistenciaOk) {
 
 				this.ingresoView.mostrarMensajeDialog("Datos guardados con exito!", "Exito");
-			}else{
+			
+			}else if(validacionOk && !persistenciaOk){
 				
 				this.ingresoView.mostrarMensajeDialog("Se ha verificado un error de persistencia.", "ERROR");
 			}
@@ -45,6 +48,7 @@ public class IngresoController implements ActionListener {
 	private boolean guardarOT() {
 
 		OrdenesTrabajosDao otDao = new OrdenesTrabajosDao();
+		ProductosDao productosDao = new ProductosDao();
 
 		String numero = otDao.generarNumeroOrden();
 		String codigoProducto = this.ingresoView.getCodigoProductoTextField().getText().trim();
@@ -56,7 +60,7 @@ public class IngresoController implements ActionListener {
 		
 		OrdenesTrabajos ot = new OrdenesTrabajos();
 		ot.setCantidadRequerida(cantidadRequerida);
-		ot.setCodigoProducto(codigoProducto);
+		ot.setProducto(productosDao.loadProducto(codigoProducto));
 		ot.setDescripcion(descripcion);
 		ot.setEsUrgente(esUrgente);
 		ot.setFechaEstimadaFinalizacion(fechaEstimadaFinalizacion);

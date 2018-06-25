@@ -8,8 +8,16 @@ import java.sql.Statement;
 
 public class DbConnection {
 
-	public static String dbDriver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-	public static String dbServer = "jdbc:sqlserver://localhost:1433;databaseName=TP_Final;integratedSecurity=true;";
+	
+//	SQLServer
+
+//	public static String dbDriver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+//	public static String dbServer = "jdbc:sqlserver://localhost:1433;databaseName=db_tp_final;integratedSecurity=true;";
+
+//	PostgreSQL	
+	public static String dbDriver = "org.postgresql.Driver";
+	public static String dbServer = "jdbc:postgresql://localhost:5432/db_tp_final?user=postgres&password=1234";
+
 
 	public static Connection getConnection() {
 		

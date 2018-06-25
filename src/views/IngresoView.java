@@ -1,5 +1,6 @@
 package views;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Font;
@@ -17,19 +18,20 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import controllers.IngresoController;
+import model.dao.ProductosDao;
 import utils.Constants;
 
 public class IngresoView {
 
 	private IngresoController ingresoController;
 	private JFrame ventanaFrame = new JFrame("Ingreso OT");
-	private JLabel codigoProductoLabel = new JLabel("C骴igo producto:");
+	private JLabel codigoProductoLabel = new JLabel("C贸digo producto:");
 	private JTextField codigoProductoTextField;
 	private JLabel cantidadLabel = new JLabel("Cantidad:");
 	private JTextField cantidadTextField;
-	private JLabel fechaEstimadaFinalizacionLabel = new JLabel("Fecha estimada finalizaci髇:");
+	private JLabel fechaEstimadaFinalizacionLabel = new JLabel("Fecha estimada finalizaci贸n:");
 	private JTextField fechaEstimadaFinalizacionTextField;
-	private JLabel descripcionLabel = new JLabel("Descripci髇:");
+	private JLabel descripcionLabel = new JLabel("Descripci贸n:");
 	private JTextArea descripcionTextArea;
 	private JCheckBox esUrgenteCheckBox;
 	private JButton ingresarButton;
@@ -43,7 +45,7 @@ public class IngresoView {
 		ventanaFrame.setLayout(Constants.ESTILO_LAYOUT);
 		ventanaFrame.setLocationRelativeTo(null);
 
-		codigoProductoLabel = new JLabel("C骴igo producto:");
+		codigoProductoLabel = new JLabel("C贸digo producto:");
 		codigoProductoTextField = new JTextField(Constants.TEXTO_ANCHO);
 		codigoProductoTextField.setCaretPosition(SwingConstants.CENTER);
 		codigoProductoTextField.setHorizontalAlignment(JTextField.CENTER);
@@ -53,17 +55,19 @@ public class IngresoView {
 		cantidadTextField.setCaretPosition(SwingConstants.CENTER);
 		cantidadTextField.setHorizontalAlignment(JTextField.CENTER);
 
-		descripcionLabel = new JLabel("Descripci髇:");
+		descripcionLabel = new JLabel("Descripci贸n:");
 		descripcionTextArea = new JTextArea();
 		descripcionTextArea.setEditable(true);	
 		descripcionTextArea.setLineWrap(true);	
 		descripcionTextArea.setWrapStyleWord(true); 
 		descripcionTextArea.setCaretPosition(SwingConstants.CENTER);
-		descripcionTextArea.setBackground(ventanaFrame.getBackground());
+//		descripcionTextArea.setBackground(ventanaFrame.getBackground());
+		descripcionTextArea.setBackground(new Color(255,255,255));
 		descripcionTextArea.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		descripcionTextArea.setFont(new Font(descripcionTextArea.getFont().getName(), Font.ITALIC, 
 		descripcionTextArea.getFont().getSize()));
-
+		descripcionTextArea.setVisible(true);
+		
 		fechaEstimadaFinalizacionTextField = new JTextField(Constants.TEXTO_ANCHO);
 		fechaEstimadaFinalizacionTextField.setCaretPosition(SwingConstants.CENTER);
 		fechaEstimadaFinalizacionTextField.setHorizontalAlignment(JTextField.CENTER);
@@ -127,13 +131,19 @@ public class IngresoView {
 
 	public boolean validar() {
 
+		ProductosDao productosDao = new ProductosDao();
 		ArrayList<String> errores = new ArrayList<>();
 		boolean datosValidos = true;
 		
 		if(this.codigoProductoTextField.getText().trim().isEmpty()){
 
-			errores.add("c骴igo del producto");
+			errores.add("c贸digo del producto");
+		}else {
+			
+			if(productosDao.loadProducto(this.codigoProductoTextField.getText().trim()) == null)
+				errores.add("c贸digo del producto");
 		}
+
 		if(this.cantidadTextField.getText().trim().isEmpty()){
 			
 			errores.add("cantidad");
@@ -151,7 +161,7 @@ public class IngresoView {
 		}
 		if(this.fechaEstimadaFinalizacionTextField.getText().trim().isEmpty()) {
 			
-			errores.add("fecha estimada finalizaci髇");
+			errores.add("fecha estimada finalizaci贸n");
 		}else{
 
 			try{
@@ -161,11 +171,11 @@ public class IngresoView {
 
 				if(!((dia > 0 && dia <=31) && (mes > 0 && mes <= 12) && (anio >= 2017 && anio <= 9999))){
 
-					errores.add("fecha salida");
+					errores.add("fecha finalizaci贸n");
 				}
 			}catch(NumberFormatException e){
 
-				errores.add("fecha salida");
+				errores.add("fecha finalizaci贸n");
 			}
 		}
 

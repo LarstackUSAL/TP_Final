@@ -6,9 +6,10 @@ public class PasosAsignados extends Pasos {
 
 	private Operarios operario;
 	private boolean esFinalizado;
+	private Calendar fechaInicio;
 	private Calendar fechaFinalizacion;
 	
-	public Usuarios getOperario() {
+	public Operarios getOperario() {
 		return operario;
 	}
 	public void setOperario(Operarios operario) {
@@ -19,6 +20,12 @@ public class PasosAsignados extends Pasos {
 	}
 	public void setEsFinalizado(boolean esFinalizado) {
 		this.esFinalizado = esFinalizado;
+	}
+	public Calendar getFechaInicio() {
+		return fechaInicio;
+	}
+	public void setFechaInicio(Calendar fechaInicio) {
+		this.fechaInicio = fechaInicio;
 	}
 	public Calendar getFechaFinalizacion() {
 		return fechaFinalizacion;

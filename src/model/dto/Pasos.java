@@ -4,14 +4,16 @@ import java.util.ArrayList;
 
 public class Pasos {
 
+	private int id;
 	private Productos producto;
 	private String descripcion;
 	private ArrayList<MateriasPrimasCantidad> materiasPrimas;
 
 	public Pasos() {};
 
-	public Pasos(Productos producto, ArrayList<MateriasPrimasCantidad> materiasPrimas, String descripcion) {
+	public Pasos(int id, Productos producto, ArrayList<MateriasPrimasCantidad> materiasPrimas, String descripcion) {
 		super();
+		this.id = id;
 		this.producto = producto;
 		this.materiasPrimas = materiasPrimas;
 		this.descripcion = descripcion;
@@ -35,4 +37,13 @@ public class Pasos {
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 }

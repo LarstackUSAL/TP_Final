@@ -4,30 +4,38 @@ import java.util.Calendar;
 
 public class OrdenesTrabajos {
 	
+	private int id;
 	private String numero;
 	private Calendar fechaAlta;
-	private String codigoProducto;
+	private Productos producto;
 	private int cantidadRequerida;
 	private Calendar fechaEstimadaFinalizacion;
 	private Calendar fechaFinalizacion;
 	private String descripcion;
 	private boolean esUrgente;
 	
-	public OrdenesTrabajos(String numero, Calendar fechaAlta, String codigoProducto, int cantidadRequerida,
+	public OrdenesTrabajos(int id, String numero, Calendar fechaAlta, Productos producto, int cantidadRequerida,
 			Calendar fechaEstimadaFinalizacion, Calendar fechaFinalizacion, String descripcion, boolean esUrgente) {
 		super();
+		this.setId(id);
 		this.numero = numero;
 		this.fechaAlta = fechaAlta;
-		this.codigoProducto = codigoProducto;
+		this.producto = producto;
 		this.cantidadRequerida = cantidadRequerida;
 		this.fechaEstimadaFinalizacion = fechaEstimadaFinalizacion;
-		this.setFechaFinalizacion(fechaFinalizacion);
+		this.fechaFinalizacion = fechaFinalizacion;
 		this.descripcion = descripcion;
 		this.esUrgente = esUrgente;
 	}
 	
 	public OrdenesTrabajos() {
 		super();
+	}
+
+	@Override
+	public String toString() {
+
+		return this.numero + " - " + this.producto.getDescripcion();
 	}
 
 	public Calendar getFechaAlta() {
@@ -37,14 +45,7 @@ public class OrdenesTrabajos {
 	public void setFechaAlta(Calendar fechaAlta) {
 		this.fechaAlta = fechaAlta;
 	}
-	
-	public String getCodigoProducto() {
-		return codigoProducto;
-	}
-	
-	public void setCodigoProducto(String codigoProducto) {
-		this.codigoProducto = codigoProducto;
-	}
+
 	
 	public int getCantidadRequerida() {
 		return cantidadRequerida;
@@ -92,6 +93,22 @@ public class OrdenesTrabajos {
 
 	public void setFechaFinalizacion(Calendar fechaFinalizacion) {
 		this.fechaFinalizacion = fechaFinalizacion;
+	}
+
+	public Productos getProducto() {
+		return producto;
+	}
+
+	public void setProducto(Productos producto) {
+		this.producto = producto;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 }

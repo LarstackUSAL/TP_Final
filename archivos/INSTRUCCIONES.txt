@@ -1,0 +1,8 @@
+   1000P1               primera instruccion del prod. 000P1     0001PH        20002AP        1
+   2000P1               segunda instruccion del prod. 000P1     0002AP        1
+   3000P2               primera instruccion del prod. 000P2     0003HS        30004EC        1
+   4000P2               segunda instruccion del prod. 000P2     0003HS        20004EC        5
+   5000P2               tercera instruccion del prod. 000P2     0004EC        5
+   6000P3               primera instruccion del prod. 000P3     0005AC        20006TC        3
+   7000P3               primera instruccion del prod. 000P3     0005AC        10006TC        3
+   8000P4               segunda instruccion del prod. 000P4     0005AC        4

@@ -2,13 +2,15 @@ package model.dto;
 
 public class Operarios extends Usuarios {
 
+	private int id;
 	private String nombre;
 	private String apellido;
 	private String legajo;
 
 	public Operarios() {}
-	public Operarios(String nombre, String apellido, String legajo) {
+	public Operarios(int id, String nombre, String apellido, String legajo) {
 		super();
+		this.setId(id);
 		this.nombre = nombre;
 		this.apellido = apellido;
 		this.legajo = legajo;
@@ -42,5 +44,11 @@ public class Operarios extends Usuarios {
 	public String toString() {
 
 		return nombre + " " + apellido;
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
 	}
 }

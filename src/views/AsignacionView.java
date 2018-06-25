@@ -6,8 +6,10 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import controllers.AsignacionController;
+import model.dao.ProductosDao;
 import model.dto.Operarios;
 import model.dto.OrdenesTrabajos;
 import model.dto.Pasos;
@@ -24,6 +26,7 @@ public class AsignacionView {
 	private JButton asignarBtn;
 	ArrayList<JLabel> tareasLabelList = new ArrayList<>();
 	ArrayList<JComboBox> operariosComboList = new ArrayList<>();
+	private ArrayList<Pasos> pasosList = new ArrayList<>();
 
 	public AsignacionView(AsignacionController asignacionController) {
 
@@ -35,13 +38,20 @@ public class AsignacionView {
 		ventana.setLayout(Constants.ESTILO_LAYOUT);
 		ventana.setLocationRelativeTo(null);
 
-		OrdenesTrabajos[] OTVector = this.asignacionController.getOTPendientes();
-
-		numerosOtLabel = new JLabel("Numeros OT");
-		numerosOTCombo = new JComboBox(OTVector);
 		seleccionarBtn = new JButton("Seleccionar");
 		seleccionarBtn.setActionCommand("Seleccionar");
 		seleccionarBtn.addActionListener(this.asignacionController);
+
+		Object[] OTVector = this.asignacionController.getOTPendientes();		
+		
+		if(OTVector.length == 0) {
+			
+			OTVector = new Object[] {"No hay OT sin asignar"};
+			this.seleccionarBtn.setVisible(false);
+		}
+		
+		numerosOtLabel = new JLabel("Numeros OT");
+		numerosOTCombo = new JComboBox(OTVector);
 		
 		ventana.add(numerosOtLabel);
 		ventana.add(numerosOTCombo);
@@ -52,6 +62,8 @@ public class AsignacionView {
 
 	public void addElementos(ArrayList<Pasos> pasosList, ArrayList<Operarios> operariosList) {
 
+		this.setPasosList(pasosList);
+
 		tareasLabelList = new ArrayList<>();
 		operariosComboList = new ArrayList<>();
 		for (int i = 0; i < pasosList.size(); i++) {
@@ -59,8 +71,11 @@ public class AsignacionView {
 			JLabel tareaLabel = new JLabel(pasosList.get(i).getDescripcion());
 			tareasLabelList.add(tareaLabel);
 			ventana.add(tareaLabel);
-
-			ventana.add(new JComboBox(operariosList.toArray()));
+			
+			JComboBox combo = new JComboBox(operariosList.toArray());
+			operariosComboList.add(combo);
+			
+			ventana.add(combo);
 
 		}
 		
@@ -72,6 +87,16 @@ public class AsignacionView {
 		ventana.setVisible(true);
 	}
 
+	public void mostrarMensajeDialog(String mensajeBody, String titulo) {
+
+		JOptionPane.showMessageDialog(null, mensajeBody, titulo, JOptionPane.INFORMATION_MESSAGE);
+		this.cerrar();
+	}
+	
+	public void cerrar() {
+		ventana.dispose();	
+	}
+	
 	public AsignacionController getAsignacionController() {
 		return asignacionController;
 	}
@@ -134,6 +159,14 @@ public class AsignacionView {
 
 	public void setOperariosComboList(ArrayList<JComboBox> operariosComboList) {
 		this.operariosComboList = operariosComboList;
+	}
+
+	public ArrayList<Pasos> getPasosList() {
+		return pasosList;
+	}
+
+	public void setPasosList(ArrayList<Pasos> pasosList) {
+		this.pasosList = pasosList;
 	}
 
 }

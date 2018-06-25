@@ -3,18 +3,24 @@ package model.dao;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Scanner;
 
 import model.dto.MateriasPrimas;
 import model.dto.MateriasPrimasCantidad;
 import model.dto.Operarios;
+import model.dto.OrdenesTrabajos;
 import model.dto.Pasos;
+import model.dto.PasosAsignados;
 import model.dto.Productos;
 import utils.DbConnection;
+import utils.Utilities;
 
 public class PasosDao {
 
@@ -28,85 +34,502 @@ public class PasosDao {
 		Statement stmt = null;
 		ResultSet rs = null;
 
-		String sql = "SELECT p.codigo "
+		String sql = "SELECT p.codigo as codigo_producto "
 				+ "FROM producto p "
 				+ "	INNER JOIN orden_trabajo ot ON p.id = ot.producto_id "
-				+ "WHERE ot.numero = '" + numeroOT + "'";
-		
+				+ "WHERE ot.numero = '" + numeroOT + "' ";
+
 		try {
-		conn = DbConnection.getConnection();
-		stmt = conn.createStatement();
-		rs = stmt.executeQuery(sql);
+			conn = DbConnection.getConnection();
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
 
-		if(rs.next()) {
+			if(rs.next()) {
 
-			String codigoProducto = rs.getString(0).trim();
+				String codigoProducto = rs.getString("codigo_producto").trim();
 
-			//codigo producto(0-19)
-			//descripcion instruccion(20-59)
-			//codigo materia prima(10 pos) + cantidad(5 pos) (60-69 + 70-74) //se repite segun la cantidad de materias
-			File f = new File("./archivos/INSTRUCCIONES.txt");
+				//id(0-3)
+				//codigo producto(4-23)
+				//descripcion instruccion(24-63)
+				//codigo materia prima(10 pos) + cantidad(5 pos) (64-73 + 74-78) //se repite segun la cantidad de materias
+				File f = new File("./archivos/INSTRUCCIONES.txt");
 
-			try {
+				try {
 
-				Scanner s = new Scanner(f);
+					Scanner s = new Scanner(f);
 
-				while(s.hasNextLine()) {
+					while(s.hasNextLine()) {
 
-					String linea = s.nextLine();
+						String linea = s.nextLine();
 
-					String codigoProductoTmp = linea.substring(0, 20).trim();
+						int id = Integer.parseInt(linea.substring(0,4).trim());
+						String codigoProductoTmp = linea.substring(4, 24).trim();
 
-					if(codigoProductoTmp.equals(codigoProducto)) {
-						
-						Productos producto = productosDao.getProductoByCodigo();
-						String descripcion = linea.substring(20, 60).trim();
-						
-						ArrayList<MateriasPrimasCantidad> materiasList = new ArrayList<>();
-						String materiasPrimasLinea = linea.substring(60).trim();
-						
-						int i = 0;
-						while(i < materiasPrimasLinea.length()) {
-							
-							String codigoMateriaPrima = materiasPrimasLinea.substring(i, i+10).trim();
-							int cantidadMateriaPrima = Integer.parseInt(materiasPrimasLinea.substring(i+10, i+15));
-							MateriasPrimas materiaPrima = materiasPrimasDao.getMateriaPrimaByCodigo(codigoMateriaPrima);	
-							
-							materiasList.add(new MateriasPrimasCantidad(materiaPrima, cantidadMateriaPrima));
-							
-							i = i + 15;
+						if(codigoProductoTmp.equals(codigoProducto)) {
+
+							Productos producto = productosDao.loadProducto(codigoProducto);
+							String descripcion = linea.substring(24, 64).trim();
+
+							ArrayList<MateriasPrimasCantidad> materiasList = new ArrayList<>();
+							String materiasPrimasLinea = linea.substring(64).trim();
+
+							int i = 0;
+							while(i < materiasPrimasLinea.length()) {
+
+								String codigoMateriaPrima = materiasPrimasLinea.substring(i, i+10).trim();
+								int cantidadMateriaPrima = Integer.parseInt(materiasPrimasLinea.substring(i+10, i+15).trim());
+								MateriasPrimas materiaPrima = materiasPrimasDao.loadMateriaPrima(codigoMateriaPrima);	
+
+								materiasList.add(new MateriasPrimasCantidad(materiaPrima, cantidadMateriaPrima));
+
+								i = i + 15;
+							}
+
+							Pasos paso = new Pasos();
+							paso.setId(id);
+							paso.setDescripcion(descripcion);
+							paso.setMateriasPrimas(materiasList);
+							paso.setProducto(producto);
+
+							pasosList.add(paso);
 						}
-						
-						Pasos paso = new Pasos();
-						paso.setDescripcion(descripcion);
-						paso.setMateriasPrimas(materiasList);
-						paso.setProducto(producto);
-						
-						pasosList.add(paso);
 					}
-				}
-				
-			} catch (FileNotFoundException e) {
 
-				e.printStackTrace();
+				} catch (FileNotFoundException e) {
+
+					e.printStackTrace();
+				}
 			}
+		}catch(SQLException e) {
+
+			e.printStackTrace();
+		}finally {
+
+			DbConnection.cerrarConexion(rs);
+			DbConnection.cerrarConexion(stmt);
+			DbConnection.cerrarConexion(conn);
 		}
-	}catch(SQLException e) {
-		
-		e.printStackTrace();
-	}finally {
-		
-		DbConnection.cerrarConexion(rs);
-		DbConnection.cerrarConexion(stmt);
-		DbConnection.cerrarConexion(conn);
-	}
 		return pasosList;
 	}
 
-	public ArrayList<Operarios> getOperarios() {
-		
-		20180221 - Levantar los operarios para mostrar en los combos 
-		return null;
+	public boolean asignarTarea(OrdenesTrabajos ot, Pasos paso, Operarios operario) {
+
+		boolean persistenciaOk = false;
+
+		Connection conn = DbConnection.getConnection();
+		PreparedStatement stmt = null;
+
+		try {
+
+			String insertOT = "insert into orden_trabajo_instruccion_operario( " +
+					"orden_trabajo_id, " +
+					"instruccion_id, " +
+					"operario_id " +
+					") "
+					+ " values(?, ?, ?) ";
+
+			stmt = conn.prepareStatement(insertOT);
+
+			stmt.setInt(1, ot.getId());
+			stmt.setInt(2, paso.getId());
+			stmt.setInt(3, operario.getId());
+
+			persistenciaOk = stmt.executeUpdate() > 0 ? true : false;
+
+		} catch (Exception e) {
+
+
+		}finally {
+
+			DbConnection.cerrarConexion(null, stmt, conn);
+		}
+
+		return persistenciaOk;
 	}
 
+	public ArrayList<PasosAsignados> getPasosAsignadosByNumeroOT(String numero) {
+
+		ArrayList<PasosAsignados> pasosList = new ArrayList<>();
+		ProductosDao productosDao = new ProductosDao();
+		MateriasPrimasDao materiasPrimasDao = new MateriasPrimasDao();
+		OperariosDao operariosDao = new OperariosDao();
+
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+
+		String sql = 
+				"select " +
+						"	otio.instruccion_id as instruccion_id, " +
+						"	otio.operario_id as operario_id, " +
+						"   otio.es_finalizado as es_finalizado, " +
+						"	otio.fecha_inicio as fecha_inicio, " +
+						"	otio.fecha_finalizacion as fecha_finalizacion " +
+						"from orden_trabajo_instruccion_operario otio " +
+						"	inner join orden_trabajo ot on otio.orden_trabajo_id = ot.id " +
+						"where ot.numero = '" + numero + "'";
+
+		try {
+			conn = DbConnection.getConnection();
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+
+			while(rs.next()) {
+
+				int idInstruccion = rs.getInt("instruccion_id");
+
+				//id(0-3)
+				//codigo producto(4-23)
+				//descripcion instruccion(24-63)
+				//codigo materia prima(10 pos) + cantidad(5 pos) (64-73 + 74-78) //se repite segun la cantidad de materias
+				File f = new File("./archivos/INSTRUCCIONES.txt");
+
+				try {
+
+					Scanner s = new Scanner(f);
+
+					while(s.hasNextLine()) {
+
+						String linea = s.nextLine();
+
+						int id = Integer.parseInt(linea.substring(0,4).trim());
+						String codigoProducto = linea.substring(4, 24).trim();
+
+						if(id == idInstruccion) {
+
+							Productos producto = productosDao.loadProducto(codigoProducto);
+							String descripcion = linea.substring(24, 64).trim();
+
+							ArrayList<MateriasPrimasCantidad> materiasList = new ArrayList<>();
+							String materiasPrimasLinea = linea.substring(64).trim();
+
+							int i = 0;
+							while(i < materiasPrimasLinea.length()) {
+
+								String codigoMateriaPrima = materiasPrimasLinea.substring(i, i+10).trim();
+								int cantidadMateriaPrima = Integer.parseInt(materiasPrimasLinea.substring(i+10, i+15).trim());
+								MateriasPrimas materiaPrima = materiasPrimasDao.loadMateriaPrima(codigoMateriaPrima);	
+
+								materiasList.add(new MateriasPrimasCantidad(materiaPrima, cantidadMateriaPrima));
+
+								i = i + 15;
+							}
+
+							PasosAsignados paso = new PasosAsignados();
+							paso.setId(id);
+							paso.setDescripcion(descripcion);
+							paso.setMateriasPrimas(materiasList);
+							paso.setProducto(producto);
+
+							Calendar calInicio = null;
+							Timestamp fechaInicioTs = rs.getTimestamp("fecha_inicio");
+							if(fechaInicioTs != null) {
+
+								calInicio = Calendar.getInstance();
+								calInicio.setTimeInMillis(fechaInicioTs.getTime());
+							}
+
+							Calendar calFin = null;
+							Timestamp fechaFinalizacionTs = rs.getTimestamp("fecha_finalizacion");
+							if(fechaFinalizacionTs != null) {
+
+								calFin = Calendar.getInstance();
+								calFin.setTimeInMillis(fechaFinalizacionTs.getTime());
+							}
+
+							paso.setFechaInicio(calInicio);
+							paso.setFechaFinalizacion(calFin);
+							paso.setOperario(operariosDao.loadOperarioById(rs.getInt("operario_id")));
+
+							paso.setEsFinalizado(rs.getBoolean("es_finalizado"));
+							pasosList.add(paso);
+						}
+					}
+
+				} catch (FileNotFoundException e) {
+
+					e.printStackTrace();
+				}
+			}
+		}catch(SQLException e) {
+
+			e.printStackTrace();
+		}finally {
+
+			DbConnection.cerrarConexion(rs);
+			DbConnection.cerrarConexion(stmt);
+			DbConnection.cerrarConexion(conn);
+		}
+		return pasosList;
+	}
+
+	public ArrayList<PasosAsignados> getPasosAsignadosByOperario(Operarios operario) {
+
+		ArrayList<PasosAsignados> pasosList = new ArrayList<>();
+		ProductosDao productosDao = new ProductosDao();
+		MateriasPrimasDao materiasPrimasDao = new MateriasPrimasDao();
+		OperariosDao operariosDao = new OperariosDao();
+
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+
+		String sql = 
+				"select " +
+						"	otio.instruccion_id as instruccion_id, " +
+						"	otio.operario_id as operario_id, " +
+						"   otio.es_finalizado as es_finalizado, " +
+						"	otio.fecha_inicio as fecha_inicio, " +
+						"	otio.fecha_finalizacion as fecha_finalizacion " +
+						"from orden_trabajo_instruccion_operario otio " +
+						"	inner join orden_trabajo ot on otio.orden_trabajo_id = ot.id " +
+						"where otio.operario_id = " + operario.getId();
+
+		try {
+			conn = DbConnection.getConnection();
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+
+			while(rs.next()) {
+
+				int idInstruccion = rs.getInt("instruccion_id");
+
+				//id(0-3)
+				//codigo producto(4-23)
+				//descripcion instruccion(24-63)
+				//codigo materia prima(10 pos) + cantidad(5 pos) (64-73 + 74-78) //se repite segun la cantidad de materias
+				File f = new File("./archivos/INSTRUCCIONES.txt");
+
+				try {
+
+					Scanner s = new Scanner(f);
+
+					while(s.hasNextLine()) {
+
+						String linea = s.nextLine();
+
+						int id = Integer.parseInt(linea.substring(0,4).trim());
+						String codigoProducto = linea.substring(4, 24).trim();
+
+						if(id == idInstruccion) {
+
+							Productos producto = productosDao.loadProducto(codigoProducto);
+							String descripcion = linea.substring(24, 64).trim();
+
+							ArrayList<MateriasPrimasCantidad> materiasList = new ArrayList<>();
+							String materiasPrimasLinea = linea.substring(64).trim();
+
+							int i = 0;
+							while(i < materiasPrimasLinea.length()) {
+
+								String codigoMateriaPrima = materiasPrimasLinea.substring(i, i+10).trim();
+								int cantidadMateriaPrima = Integer.parseInt(materiasPrimasLinea.substring(i+10, i+15).trim());
+								MateriasPrimas materiaPrima = materiasPrimasDao.loadMateriaPrima(codigoMateriaPrima);	
+
+								materiasList.add(new MateriasPrimasCantidad(materiaPrima, cantidadMateriaPrima));
+
+								i = i + 15;
+							}
+
+							PasosAsignados paso = new PasosAsignados();
+							paso.setId(id);
+							paso.setDescripcion(descripcion);
+							paso.setMateriasPrimas(materiasList);
+							paso.setProducto(producto);
+
+							Calendar calInicio = null;
+							Timestamp fechaInicioTs = rs.getTimestamp("fecha_inicio");
+							if(fechaInicioTs != null) {
+
+								calInicio = Calendar.getInstance();
+								calInicio.setTimeInMillis(fechaInicioTs.getTime());
+							}
+
+							Calendar calFin = null;
+							Timestamp fechaFinalizacionTs = rs.getTimestamp("fecha_finalizacion");
+							if(fechaFinalizacionTs != null) {
+
+								calFin = Calendar.getInstance();
+								calFin.setTimeInMillis(fechaFinalizacionTs.getTime());
+							}
+
+							paso.setFechaInicio(calInicio);
+							paso.setFechaFinalizacion(calFin);
+							paso.setOperario(operariosDao.loadOperarioById(rs.getInt("operario_id")));
+
+							paso.setEsFinalizado(rs.getBoolean("es_finalizado"));
+							pasosList.add(paso);
+						}
+					}
+
+				} catch (FileNotFoundException e) {
+
+					e.printStackTrace();
+				}
+			}
+		}catch(SQLException e) {
+
+			e.printStackTrace();
+		}finally {
+
+			DbConnection.cerrarConexion(rs);
+			DbConnection.cerrarConexion(stmt);
+			DbConnection.cerrarConexion(conn);
+		}
+		return pasosList;
+	}
+
+	public boolean iniciarPaso(int idPaso) {
+
+		boolean persistenciaOk = false;
+
+		Connection conn = DbConnection.getConnection();
+		PreparedStatement stmt = null;
+
+		try {
+
+			//PostgrSQL
+			String updatePaso = "update orden_trabajo_instruccion_operario set fecha_inicio=now() where id=" + idPaso;
+
+			//SQL Server
+			//			String insertOT = "update orden_trabajo_instruccion_operario set fecha_inicio=getDate() where id =" + idPaso;
+
+			stmt = conn.prepareStatement(updatePaso);
+
+			persistenciaOk = stmt.executeUpdate() > 0 ? true : false;
+
+		} catch (Exception e) {
+
+
+		}finally {
+
+			DbConnection.cerrarConexion(null, stmt, conn);
+		}
+
+		return persistenciaOk;
+	}
+
+	public boolean finalizarPaso(int idPaso) {
+
+		boolean persistenciaOk = false;
+
+		Connection conn = DbConnection.getConnection();
+		PreparedStatement stmtPaso = null;
+
+		try {
+
+			conn.setAutoCommit(false);
+
+			//PostgrSQL
+			String updatePaso = "update orden_trabajo_instruccion_operario set fecha_finalizacion=now(), es_finalizado=true where id=" + idPaso;
+
+			//SQL Server
+			//			String insertOT = "update orden_trabajo_instruccion_operario set fecha_finalizacion=getDate(), es_finalizado=true where id =" + idPaso;
+
+			stmtPaso = conn.prepareStatement(updatePaso);
+
+			persistenciaOk = stmtPaso.executeUpdate() > 0 ? true : false;
+
+			if(persistenciaOk) {
+
+				OrdenesTrabajosDao ordenesTrabajosDao = new OrdenesTrabajosDao();
+				OrdenesTrabajos ordenTrabajo = ordenesTrabajosDao.getOrdenTrabajoByPaso(this.getPasoById(idPaso));
+
+				String sql = "select count(*) as total " +
+						"from orden_trabajo_instruccion_operario otio " +
+						"where otio.orden_trabajo_id = " + ordenTrabajo.getId() +
+						"	and fecha_finalizacion is null";
+
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(sql);
+
+
+				if(rs != null && rs.next()) {
+
+					Integer total = rs.getInt("total");
+
+					if(total == 0) {
+
+						String updateOt = "update orden_trabajo set fecha_finalizacion=now() where id=" + ordenTrabajo.getId();
+
+						PreparedStatement stmtOt = conn.prepareStatement(updateOt);
+
+						persistenciaOk = stmtOt.executeUpdate() > 0 ? true : false;
+					}
+				}				
+
+				conn.commit();
+			}
+
+		} catch (Exception e) {
+
+			persistenciaOk = false;
+
+		}finally {
+
+			DbConnection.cerrarConexion(null, stmtPaso, conn);
+		}
+
+		return persistenciaOk;
+	}
+
+	private Pasos getPasoById(int idInstruccion) {
+
+		Pasos paso = null;
+		ProductosDao productosDao = new ProductosDao();
+		MateriasPrimasDao materiasPrimasDao = new MateriasPrimasDao();
+
+		//id(0-3)
+		//codigo producto(4-23)
+		//descripcion instruccion(24-63)
+		//codigo materia prima(10 pos) + cantidad(5 pos) (64-73 + 74-78) //se repite segun la cantidad de materias
+		File f = new File("./archivos/INSTRUCCIONES.txt");
+
+		try {
+
+			Scanner s = new Scanner(f);
+
+			while(s.hasNextLine()) {
+
+				String linea = s.nextLine();
+
+				int id = Integer.parseInt(linea.substring(0,4).trim());
+				String codigoProducto = linea.substring(4, 24).trim();
+
+				if(id == idInstruccion) {
+
+					Productos producto = productosDao.loadProducto(codigoProducto);
+					String descripcion = linea.substring(24, 64).trim();
+
+					ArrayList<MateriasPrimasCantidad> materiasList = new ArrayList<>();
+					String materiasPrimasLinea = linea.substring(64).trim();
+
+					int i = 0;
+					while(i < materiasPrimasLinea.length()) {
+
+						String codigoMateriaPrima = materiasPrimasLinea.substring(i, i+10).trim();
+						int cantidadMateriaPrima = Integer.parseInt(materiasPrimasLinea.substring(i+10, i+15).trim());
+						MateriasPrimas materiaPrima = materiasPrimasDao.loadMateriaPrima(codigoMateriaPrima);	
+
+						materiasList.add(new MateriasPrimasCantidad(materiaPrima, cantidadMateriaPrima));
+
+						i = i + 15;
+					}
+
+					paso = new Pasos();
+					paso.setId(id);
+					paso.setDescripcion(descripcion);
+					paso.setMateriasPrimas(materiasList);
+					paso.setProducto(producto);
+
+				}
+			}
+
+		} catch (FileNotFoundException e) {
+
+			e.printStackTrace();
+		}
+
+		return paso;
+	}
 }
