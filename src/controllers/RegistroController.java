@@ -12,7 +12,7 @@ import model.dto.Operarios;
 import model.dto.OrdenesTrabajos;
 import model.dto.PasosAsignados;
 import utils.Utilities;
-import views.RegistroView;
+import view.RegistroView;
 
 public class RegistroController implements ActionListener {
 
@@ -32,7 +32,6 @@ public class RegistroController implements ActionListener {
 		PasosDao pasosDao = new PasosDao();
 		OrdenesTrabajosDao ordenesTrabajosDao = new OrdenesTrabajosDao();
 
-		Agregar sistema de seguridad para que tome el usuario conectado
 		ArrayList<PasosAsignados> pasosList = pasosDao.getPasosAsignadosByOperario(operario);
 		
 		ArrayList<HashMap<String,String>> pasosAsignadosList = new ArrayList<>();

@@ -13,7 +13,7 @@ import model.dto.Operarios;
 import model.dto.OrdenesTrabajos;
 import model.dto.Pasos;
 import utils.Utilities;
-import views.AsignacionView;
+import view.AsignacionView;
 
 public class AsignacionController implements ActionListener {
 

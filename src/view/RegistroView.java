@@ -1,4 +1,4 @@
-package views;
+package view;
 
 import java.awt.Font;
 import java.util.ArrayList;

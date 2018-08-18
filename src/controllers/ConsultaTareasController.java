@@ -9,7 +9,7 @@ import model.dao.OrdenesTrabajosDao;
 import model.dao.PasosDao;
 import model.dto.OrdenesTrabajos;
 import model.dto.PasosAsignados;
-import views.ConsultaTareasView;
+import view.ConsultaTareasView;
 
 public class ConsultaTareasController implements ActionListener{
 

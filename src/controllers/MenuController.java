@@ -3,11 +3,11 @@ package controllers;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import views.AsignacionView;
-import views.ConsultaTareasView;
-import views.IngresoView;
-import views.MenuView;
-import views.RegistroView;
+import view.AsignacionView;
+import view.ConsultaTareasView;
+import view.IngresoView;
+import view.MenuView;
+import view.RegistroView;
 
 public class MenuController implements ActionListener {
 

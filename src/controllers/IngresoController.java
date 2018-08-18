@@ -8,7 +8,7 @@ import model.dao.OrdenesTrabajosDao;
 import model.dao.ProductosDao;
 import model.dto.OrdenesTrabajos;
 import utils.Utilities;
-import views.IngresoView;
+import view.IngresoView;
 
 public class IngresoController implements ActionListener {
 

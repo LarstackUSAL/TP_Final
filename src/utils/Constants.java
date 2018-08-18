@@ -13,4 +13,7 @@ public class Constants {
 	
 	public static final FlowLayout ESTILO_LAYOUT = new FlowLayout(FlowLayout.CENTER, 5, 10);
 	
+	public static final String ROL_SUPERVISOR = "ROL_SUPERVISOR";
+	public static final String ROL_OPERARIO = "ROL_OPERARIO";
+	
 }

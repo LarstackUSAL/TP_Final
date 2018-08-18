@@ -1,14 +1,16 @@
 package main;
 
+import controllers.LoginController;
 import controllers.MenuController;
-import views.MenuView;
+import view.LoginView;
+import view.MenuView;
 
 public class Main {
 
 	public static void main(String[] args) {
 
-		MenuController menuController = new MenuController(); 
-		MenuView menuView = new MenuView(menuController);	
+		LoginController loginController = new LoginController();
+		LoginView loginView = new LoginView(loginController); 	
 				
 	}
 
