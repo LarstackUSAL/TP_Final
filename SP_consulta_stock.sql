@@ -7,9 +7,9 @@ AS
 	
 	set @stock =
 		
-		select cantidad
+		(select cantidad
 		from materia_prima
-		where codigo = @codigoMateriaPrima;
+		where codigo = @codigoMateriaPrima);
 	
 		PRINT 'Stock: ' + cast(@stock as varchar)
 
