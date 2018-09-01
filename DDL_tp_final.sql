@@ -4,7 +4,8 @@ create table materia_prima(
 	
 	id serial primary key,
 	codigo varchar(50) not null,
-	descripcion varchar(80) not null
+	descripcion varchar(80) not null,
+	cantidad int not null default 0
 );
 
 --drop table producto;
@@ -54,17 +55,17 @@ create table orden_trabajo_instruccion_operario(
 	constraint fk_instruccion_operario foreign key (operario_id) references operario(id)	
 ); 
 
-insert into materia_prima(codigo, descripcion) values('0001PH', 'Peroxido de hidrogeno');
-insert into materia_prima(codigo, descripcion) values('0002AP', 'Acido peracetico');
+insert into materia_prima(codigo, descripcion, cantidad) values('0001PH', 'Peroxido de hidrogeno', 2);
+insert into materia_prima(codigo, descripcion, cantidad) values('0002AP', 'Acido peracetico', 3);
 insert into producto(codigo, descripcion) values('000P1', 'Letal Peroxo');
 
-insert into materia_prima(codigo, descripcion) values('0003HS', 'Hipoclorito sodico');
-insert into materia_prima(codigo, descripcion) values('0004EC', 'Estabilizador de cloro');
+insert into materia_prima(codigo, descripcion, cantidad) values('0003HS', 'Hipoclorito sodico', 8);
+insert into materia_prima(codigo, descripcion, cantidad) values('0004EC', 'Estabilizador de cloro', 1);
 insert into producto(codigo, descripcion) values('000P2', 'Actival Clorado');
 
-insert into materia_prima(codigo, descripcion) values('0005AC', 'Amonios cuaternarios');
-insert into materia_prima(codigo, descripcion) values('0006TC', 'Tensioactivo cationico');
-insert into producto(codigo, descripcion) values('000P3', 'Fungicida Plus');
+insert into materia_prima(codigo, descripcion, cantidad) values('0005AC', 'Amonios cuaternarios', 12);
+insert into materia_prima(codigo, descripcion, cantidad) values('0006TC', 'Tensioactivo cationico', 0);
+insert into producto(codigo, descripcion) values('000P3', 'Fungicida Plus');	
 
 insert into producto(codigo, descripcion) values('000P4', 'Limpiador bactericida');
 
