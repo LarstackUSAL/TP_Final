@@ -35,7 +35,7 @@ public class ConsultaStockServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		String codigoMateriaPrima = request.getParameter("codigoMateriaPrima");
+		String codigoMateriaPrima = request.getParameter("codigoMateriaPrima").trim();
 		MateriasPrimasDao materiasPrimasDao = new MateriasPrimasDao();
 		
 		int stock = materiasPrimasDao.consultaStock(codigoMateriaPrima);

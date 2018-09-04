@@ -9,7 +9,7 @@ AS
 		
 		(select cantidad
 		from materia_prima
-		where codigo = @codigoMateriaPrima);
+		where upper(codigo) = upper(@codigoMateriaPrima));
 	
 		PRINT 'Stock: ' + cast(@stock as varchar)
 
