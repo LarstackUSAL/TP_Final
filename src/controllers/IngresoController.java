@@ -65,6 +65,7 @@ public class IngresoController implements ActionListener {
 		ot.setEsUrgente(esUrgente);
 		ot.setFechaEstimadaFinalizacion(fechaEstimadaFinalizacion);
 		ot.setNumero(numero);
+		ot.setUsuarioCreacion(LoginController.USUARIO_LOGUEADO);
 
 		return otDao.persistirNuevaOT(ot);
 	}

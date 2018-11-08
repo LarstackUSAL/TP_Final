@@ -34,10 +34,10 @@ create table sistema_seguridad_usuario_modelo(
 	--id serial primary key,
 	id int IDENTITY(1,1) PRIMARY KEY,
 	usuario_id int not null,
-	operario_id int not null,
+	persona_id int not null,
 	
 	constraint fk_seguridad_modelo_usuario foreign key (usuario_id) references sistema_seguridad_usuario(id),
-	constraint fk_seguridad_modelo_operario foreign key (operario_id) references operario(id)
+	constraint fk_seguridad_modelo_persona foreign key (persona_id) references persona(id)
 );
 
 insert into sistema_seguridad_usuario(usuario, password) values('supervisor1', 'tpfinal');
@@ -54,11 +54,11 @@ insert into sistema_seguridad_usuario_rol(usuario_id, rol_id) values(2, 1);
 insert into sistema_seguridad_usuario_rol(usuario_id, rol_id) values(3, 2);
 insert into sistema_seguridad_usuario_rol(usuario_id, rol_id) values(4, 2);
 
-insert into sistema_seguridad_usuario_modelo(usuario_id, operario_id) values(1, 1);
-insert into sistema_seguridad_usuario_modelo(usuario_id, operario_id) values(2, 2);
-insert into sistema_seguridad_usuario_modelo(usuario_id, operario_id) values(3, 3);
-insert into sistema_seguridad_usuario_modelo(usuario_id, operario_id) values(4, 4);
-insert into sistema_seguridad_usuario_modelo(usuario_id, operario_id) values(5, 5);
+insert into sistema_seguridad_usuario_modelo(usuario_id, persona_id) values(1, 1);
+insert into sistema_seguridad_usuario_modelo(usuario_id, persona_id) values(2, 2);
+insert into sistema_seguridad_usuario_modelo(usuario_id, persona_id) values(3, 3);
+insert into sistema_seguridad_usuario_modelo(usuario_id, persona_id) values(4, 4);
+insert into sistema_seguridad_usuario_modelo(usuario_id, persona_id) values(5, 5);
 
 id |usuario     |password |
 ---|------------|---------|

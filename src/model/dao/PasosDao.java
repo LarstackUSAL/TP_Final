@@ -2,6 +2,9 @@ package model.dao;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,6 +13,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Scanner;
 
 import model.dto.MateriasPrimas;
@@ -298,7 +302,7 @@ public class PasosDao {
 				//codigo producto(4-23)
 				//descripcion instruccion(24-63)
 				//codigo materia prima(10 pos) + cantidad(5 pos) (64-73 + 74-78) //se repite segun la cantidad de materias
-				File f = new File("./archivos/INSTRUCCIONES.txt");
+				File f = new File("./archivos/INSTRUCCIONES.txt");				
 
 				try {
 
@@ -532,4 +536,152 @@ public class PasosDao {
 
 		return paso;
 	}
+
+	public ArrayList<Pasos> getPasosByCodigoProducto(String codigo) {
+
+		ArrayList<Pasos> pasos = new ArrayList<>();
+		ProductosDao productosDao = new ProductosDao();
+		MateriasPrimasDao materiasPrimasDao = new MateriasPrimasDao();
+
+		//id(0-3)
+		//codigo producto(4-23)
+		//descripcion instruccion(24-63)
+		//codigo materia prima(10 pos) + cantidad(5 pos) (64-73 + 74-78) //se repite segun la cantidad de materias
+
+		String currentDirectory = new File("").getAbsolutePath();
+
+		//		File f = new File("./archivos/INSTRUCCIONES.txt");
+		File f = new File(currentDirectory + "/archivos/INSTRUCCIONES.txt");
+		try {
+
+			Scanner s = new Scanner(f);
+
+			while(s.hasNextLine()) {
+
+				String linea = s.nextLine();
+
+				int id = Integer.parseInt(linea.substring(0,4).trim());
+				String codigoProducto = linea.substring(4, 24).trim();
+
+				if(codigoProducto.equals(codigo)) {
+
+					Productos producto = productosDao.loadProducto(codigoProducto);
+					String descripcion = linea.substring(24, 64).trim();
+
+					ArrayList<MateriasPrimasCantidad> materiasList = new ArrayList<>();
+					String materiasPrimasLinea = linea.substring(64).trim();
+
+					int i = 0;
+					while(i < materiasPrimasLinea.length()) {
+
+						String codigoMateriaPrima = materiasPrimasLinea.substring(i, i+10).trim();
+						int cantidadMateriaPrima = Integer.parseInt(materiasPrimasLinea.substring(i+10, i+15).trim());
+						MateriasPrimas materiaPrima = materiasPrimasDao.loadMateriaPrima(codigoMateriaPrima);	
+
+						materiasList.add(new MateriasPrimasCantidad(materiaPrima, cantidadMateriaPrima));
+
+						i = i + 15;
+					}
+
+					Pasos paso = new Pasos();
+					paso.setId(id);
+					paso.setDescripcion(descripcion);
+					paso.setMateriasPrimas(materiasList);
+					paso.setProducto(producto);
+
+					pasos.add(paso);
+				}
+			}
+
+		} catch (FileNotFoundException e) {
+
+			e.printStackTrace();
+		}
+
+		return pasos;
+	}
+
+	public void actualizarInstrucciones(List<Pasos> pasos) {
+
+		ProductosDao productosDao = new ProductosDao();
+		MateriasPrimasDao materiasPrimasDao = new MateriasPrimasDao();
+
+		//id(0-3)
+		//codigo producto(4-23)
+		//descripcion instruccion(24-63)
+		//codigo materia prima(10 pos) + cantidad(5 pos) (64-73 + 74-78) //se repite segun la cantidad de materias
+
+		String currentDirectory = new File("").getAbsolutePath();
+
+		try {
+
+//			File f = new File("./archivos/INSTRUCCIONES.txt");
+			File f = new File(currentDirectory + "/archivos/INSTRUCCIONES.txt");
+
+			FileWriter fw = new FileWriter(currentDirectory + "/archivos/INSTRUCCIONES_tmp.txt");
+			PrintWriter fwOut = new PrintWriter(fw);
+
+			Scanner s = new Scanner(f);
+
+//			CORREGIR PORQUE ESTÁ GRABANDO MAL EL ARCHIVO (DUPLICA LAS FILAS)
+			
+			while(s.hasNextLine()) {
+
+				String linea = s.nextLine();
+
+				int id = Integer.parseInt(linea.substring(0,4).trim());
+
+				for (int i = 0; i < pasos.size(); i++) {
+
+					if(pasos.get(i).getId() == id) {
+
+						String lineaWrite = "";
+
+						String idString = Utilities.fillString(String.valueOf(id), 4, " ", true);
+						String codigo = Utilities.fillString(String.valueOf(pasos.get(i).getProducto().getCodigo()), 20, " ", false);
+						String descripcion = Utilities.fillString(String.valueOf(pasos.get(i).getDescripcion()), 40, " ", false);
+
+						lineaWrite = idString + codigo + descripcion;
+
+						for (int j = 0; j < pasos.get(i).getMateriasPrimas().size(); j++) {
+
+							MateriasPrimasCantidad mat = pasos.get(i).getMateriasPrimas().get(j);
+
+							String codigoMat = Utilities.fillString(mat.getMateriaPrima().getCodigo(), 10, " ", false);
+							String cantidadMat = Utilities.fillString(String.valueOf(mat.getCantidad()), 5, " ", false);
+
+							lineaWrite = codigoMat + cantidadMat;
+						}
+						
+						fwOut.println(lineaWrite);
+						
+					} else {
+						
+						fwOut.println(linea);
+					}
+				}
+			}
+			
+			fwOut.close();
+			fw.close();
+			s.close();
+			
+			f.delete();
+					
+			File newInstrucciones = new File(currentDirectory + "/archivos/INSTRUCCIONES.txt");
+
+			File tmp = new File(currentDirectory + "/archivos/INSTRUCCIONES_tmp.txt");
+			tmp.renameTo(newInstrucciones);
+			
+			tmp.delete();
+
+		} catch (FileNotFoundException e) {
+
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 }

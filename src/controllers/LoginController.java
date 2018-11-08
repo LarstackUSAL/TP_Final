@@ -10,6 +10,8 @@ import view.MenuView;
 
 public class LoginController implements ActionListener {
 
+	public static String USUARIO_LOGUEADO;
+	
 	private LoginView loginView;
 
 	public void setLoginView(LoginView loginView) {
@@ -31,6 +33,8 @@ public class LoginController implements ActionListener {
 
 			if(!rol.isEmpty()) {
 
+				LoginController.USUARIO_LOGUEADO = usuario;
+				
 				MenuController menuController = new MenuController(); 
 				MenuView menuView = new MenuView(menuController, rol);
 				

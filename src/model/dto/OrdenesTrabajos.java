@@ -14,6 +14,8 @@ public class OrdenesTrabajos {
 	private String descripcion;
 	private boolean esUrgente;
 	
+	private String usuarioCreacion;
+	
 	public OrdenesTrabajos(int id, String numero, Calendar fechaAlta, Productos producto, int cantidadRequerida,
 			Calendar fechaEstimadaFinalizacion, Calendar fechaFinalizacion, String descripcion, boolean esUrgente) {
 		super();
@@ -109,6 +111,14 @@ public class OrdenesTrabajos {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public String getUsuarioCreacion() {
+		return usuarioCreacion;
+	}
+
+	public void setUsuarioCreacion(String usuarioCreacion) {
+		this.usuarioCreacion = usuarioCreacion;
 	}
 	
 }

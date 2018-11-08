@@ -84,11 +84,12 @@ public class OrdenesTrabajosDao {
 					"cantidad_requerida, " +
 					"fecha_estimada_finalizacion, " +
 					"descripcion, " +
-					"es_urgente " +
+					"es_urgente, " +
+					"usuario_alta_id " +
 					") " +
-					"select ?, p.id, ?, ?, ?, ? " +
-					"from producto p "
-					+ "where p.codigo = ?";
+					"select ?, p.id, ?, ?, ?, ?, u.id " +
+					"from producto p, sistema_seguridad_usuario u "
+					+ "where p.codigo = ? and u.usuario = ? ";
 
 			stmt = conn.prepareStatement(insertOT);
 
@@ -99,7 +100,7 @@ public class OrdenesTrabajosDao {
 			stmt.setString(4, ot.getDescripcion());
 			stmt.setBoolean(5, ot.isEsUrgente());
 			stmt.setString(6, ot.getProducto().getCodigo());
-
+			stmt.setString(7, ot.getUsuarioCreacion());
 
 			persistenciaOk = stmt.executeUpdate() > 0 ? true : false;
 
@@ -132,16 +133,20 @@ public class OrdenesTrabajosDao {
 				"ot.fecha_estimada_finalizacion, "	+
 				"ot.fecha_finalizacion, " +
 				"ot.descripcion, " +
-				"ot.es_urgente " +
+				"ot.es_urgente," +
+				"u.usuario " +
 				"FROM orden_trabajo ot "
 				+ "INNER JOIN producto p ON ot.producto_id = p.id "
 				+ "		left join orden_trabajo_instruccion_operario otio on ot.id = otio.orden_trabajo_id "
+				+ "			inner join usuario u on ot.usuario_alta_id = u.id "
 				+ "where 1=1 ";
 
 		if(pendientes) {
 
 			sql += " and otio.id is null ";
 		}
+		
+		sql += " order by u.usuario ";
 		try {
 
 			stmt = conn.createStatement();
@@ -177,7 +182,8 @@ public class OrdenesTrabajosDao {
 					ot.setFechaFinalizacion(calFechaFinalizacion);
 					ot.setDescripcion(rs.getString("descripcion"));
 					ot.setEsUrgente(rs.getBoolean("es_urgente"));
-
+					ot.setUsuarioCreacion(rs.getString("usuario"));
+					
 					ordenesTrabajosList.add(ot);
 				}
 			}
