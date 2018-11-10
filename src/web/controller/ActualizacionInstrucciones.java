@@ -35,36 +35,46 @@ public class ActualizacionInstrucciones extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		if(request.getParameter("buscar").equals("true")) {
-			
+
 			String codigoProducto = request.getParameter("consultaProducto").trim();
 			PasosDao pasosDao = new PasosDao();
 			ArrayList<Pasos> pasos = pasosDao.getPasosByCodigoProducto(codigoProducto);
 
 			request.getSession().setAttribute("pasos", pasos);
-			request.getSession().setAttribute("mensajeActualizacion", null);
+			request.setAttribute("mensajeActualizacion", null);
 			request.getRequestDispatcher("actualizacionInstrucciones.jsp").forward(request, response);
 		}else {
-			
+
 			List<Pasos> pasos = (List<Pasos>) request.getSession().getAttribute("pasos");
-			
-			for (int i = 0; i < pasos.size(); i++) {
-				
-				Pasos paso = pasos.get(i);
-				paso.setDescripcion(request.getParameter("descripcion_" + paso.getId()));
-				
+
+			try {
+
+
+				for (int i = 0; i < pasos.size(); i++) {
+
+					Pasos paso = pasos.get(i);
+					paso.setDescripcion(request.getParameter("descripcion_" + paso.getId()));
+
 					for (int j = 0; j < paso.getMateriasPrimas().size(); j++) {
-					
+
 						MateriasPrimasCantidad mp = paso.getMateriasPrimas().get(j);
 						mp.setCantidad(Integer.parseInt(request.getParameter(paso.getId() + "_" + mp.getMateriaPrima().getCodigo())));
 					}
+				}
+
+				PasosDao pasosDao = new PasosDao();
+				pasosDao.actualizarInstrucciones(pasos);
+
+				request.getSession().setAttribute("pasos", null);
+				request.setAttribute("mensajeActualizacion", "Instrucciones actualizadas con exito!");
+				request.getRequestDispatcher("actualizacionInstrucciones.jsp").forward(request, response);
+
+			} catch(Exception e) {
+
+				request.getSession().setAttribute("pasos", null);
+				request.setAttribute("mensajeActualizacion", "Se ha verificado un error al actualizar las instrucciones.");
+				request.getRequestDispatcher("actualizacionInstrucciones.jsp").forward(request, response);
 			}
-			
-			PasosDao pasosDao = new PasosDao();
-			pasosDao.actualizarInstrucciones(pasos);
-			
-			request.getSession().setAttribute("pasos", null);
-			request.getSession().setAttribute("mensajeActualizacion", "Instrucciones actualizadas con exito!");
-			request.getRequestDispatcher("actualizacionInstrucciones.jsp").forward(request, response);
 		}
 	}
 

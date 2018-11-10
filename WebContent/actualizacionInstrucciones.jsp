@@ -25,6 +25,12 @@ function submitForm(buscar) {
 	document.getElementById('consultaProducto').submit();			
 }
 
+function validateNumber(numero){
+
+	if(numero.value.toString().length > 5){
+		numero.value = numero.value.substr(0, 5);
+	}
+}
 </script>
 
 <style type="text/css">
@@ -61,8 +67,8 @@ function submitForm(buscar) {
 	
 	<input type="hidden" id="buscar" name="buscar" value="true" />
 
-	<% if(request.getSession().getAttribute("mensajeActualizacion")!=null) { %>
-		<p>request.getSession().getAttribute("mensajeActualizacion")</p>
+	<% if(request.getAttribute("mensajeActualizacion")!=null) { %>
+		<p><%= request.getAttribute("mensajeActualizacion")%></p>
 	<% } %>
 	
 	<% if(request.getSession().getAttribute("pasos")!=null) { 
@@ -84,11 +90,11 @@ function submitForm(buscar) {
 	<tr>
 		<td><%= p.getId() %></td>
 		<td><%= p.getProducto().getDescripcion() + "("+ p.getProducto().getCodigo() +")" %></td>
-		<td contenteditable class="editable" required><input name="descripcion_<%= p.getId() %>" value="<%= p.getDescripcion() %>" /></td>
+		<td contenteditable class="editable"><input maxlength="40" name="descripcion_<%= p.getId() %>" value="<%= p.getDescripcion() %>" required /></td>
 		<% for(MateriasPrimasCantidad mp : p.getMateriasPrimas()){ %>
 			
 				<td><%= mp.getMateriaPrima().getDescripcion() %></td>
-				<td contenteditable class="editable" required><input name="<%= p.getId() %>_<%= mp.getMateriaPrima().getCodigo() %>" value="<%= mp.getCantidad() %>" /></td>
+				<td contenteditable class="editable" ><input type="number" onkeyup="validateNumber(this);" name="<%= p.getId() %>_<%= mp.getMateriaPrima().getCodigo() %>" value="<%= mp.getCantidad() %>" required /></td>
 			
 		<%}%>
 	</tr>
@@ -96,7 +102,8 @@ function submitForm(buscar) {
 	
 	</table>
 	<input type="button" value="Actualizar" onclick="submitForm(false);" />
-	<% } %>
+		
+	<% request.getSession().setAttribute("pasos",pasos); } %>
 	
 	</form>
 </body>

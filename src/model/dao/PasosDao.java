@@ -28,6 +28,9 @@ import utils.Utilities;
 
 public class PasosDao {
 
+	private final String PATH_INSTRUCCIONES = "./archivos/INSTRUCCIONES.txt";
+	private final String PATH_INSTRUCCIONES_TMP = "./archivos/INSTRUCCIONES_TMP.txt";
+	
 	public ArrayList<Pasos> getPasosByNumeroOT(String numeroOT) {
 
 		ArrayList<Pasos> pasosList = new ArrayList<>();
@@ -56,7 +59,7 @@ public class PasosDao {
 				//codigo producto(4-23)
 				//descripcion instruccion(24-63)
 				//codigo materia prima(10 pos) + cantidad(5 pos) (64-73 + 74-78) //se repite segun la cantidad de materias
-				File f = new File("./archivos/INSTRUCCIONES.txt");
+				File f = new File(PATH_INSTRUCCIONES);
 
 				try {
 
@@ -186,7 +189,7 @@ public class PasosDao {
 				//codigo producto(4-23)
 				//descripcion instruccion(24-63)
 				//codigo materia prima(10 pos) + cantidad(5 pos) (64-73 + 74-78) //se repite segun la cantidad de materias
-				File f = new File("./archivos/INSTRUCCIONES.txt");
+				File f = new File(PATH_INSTRUCCIONES);
 
 				try {
 
@@ -302,7 +305,7 @@ public class PasosDao {
 				//codigo producto(4-23)
 				//descripcion instruccion(24-63)
 				//codigo materia prima(10 pos) + cantidad(5 pos) (64-73 + 74-78) //se repite segun la cantidad de materias
-				File f = new File("./archivos/INSTRUCCIONES.txt");				
+				File f = new File(PATH_INSTRUCCIONES);				
 
 				try {
 
@@ -487,7 +490,7 @@ public class PasosDao {
 		//codigo producto(4-23)
 		//descripcion instruccion(24-63)
 		//codigo materia prima(10 pos) + cantidad(5 pos) (64-73 + 74-78) //se repite segun la cantidad de materias
-		File f = new File("./archivos/INSTRUCCIONES.txt");
+		File f = new File(PATH_INSTRUCCIONES);
 
 		try {
 
@@ -548,10 +551,8 @@ public class PasosDao {
 		//descripcion instruccion(24-63)
 		//codigo materia prima(10 pos) + cantidad(5 pos) (64-73 + 74-78) //se repite segun la cantidad de materias
 
-		String currentDirectory = new File("").getAbsolutePath();
-
-		//		File f = new File("./archivos/INSTRUCCIONES.txt");
-		File f = new File(currentDirectory + "/archivos/INSTRUCCIONES.txt");
+		File f = new File(PATH_INSTRUCCIONES);
+		
 		try {
 
 			Scanner s = new Scanner(f);
@@ -606,34 +607,32 @@ public class PasosDao {
 		ProductosDao productosDao = new ProductosDao();
 		MateriasPrimasDao materiasPrimasDao = new MateriasPrimasDao();
 
-		//id(0-3)
-		//codigo producto(4-23)
-		//descripcion instruccion(24-63)
+		//id(0-3) - 4
+		//codigo producto(4-23) - 20
+		//descripcion instruccion(24-63) - 40
 		//codigo materia prima(10 pos) + cantidad(5 pos) (64-73 + 74-78) //se repite segun la cantidad de materias
-
-		String currentDirectory = new File("").getAbsolutePath();
 
 		try {
 
-//			File f = new File("./archivos/INSTRUCCIONES.txt");
-			File f = new File(currentDirectory + "/archivos/INSTRUCCIONES.txt");
-
-			FileWriter fw = new FileWriter(currentDirectory + "/archivos/INSTRUCCIONES_tmp.txt");
+			File f = new File(PATH_INSTRUCCIONES);
+			FileWriter fw = new FileWriter(PATH_INSTRUCCIONES_TMP);
 			PrintWriter fwOut = new PrintWriter(fw);
 
 			Scanner s = new Scanner(f);
-
-//			CORREGIR PORQUE ESTÁ GRABANDO MAL EL ARCHIVO (DUPLICA LAS FILAS)
 			
 			while(s.hasNextLine()) {
 
 				String linea = s.nextLine();
 
 				int id = Integer.parseInt(linea.substring(0,4).trim());
-
+				
+				boolean lineaActualizada = false;
+				
 				for (int i = 0; i < pasos.size(); i++) {
 
 					if(pasos.get(i).getId() == id) {
+						
+						lineaActualizada = true;
 
 						String lineaWrite = "";
 
@@ -648,17 +647,19 @@ public class PasosDao {
 							MateriasPrimasCantidad mat = pasos.get(i).getMateriasPrimas().get(j);
 
 							String codigoMat = Utilities.fillString(mat.getMateriaPrima().getCodigo(), 10, " ", false);
-							String cantidadMat = Utilities.fillString(String.valueOf(mat.getCantidad()), 5, " ", false);
+							String cantidadMat = Utilities.fillString(String.valueOf(mat.getCantidad()), 5, " ", true);
 
-							lineaWrite = codigoMat + cantidadMat;
+							lineaWrite = lineaWrite + codigoMat + cantidadMat;
 						}
 						
 						fwOut.println(lineaWrite);
 						
-					} else {
-						
-						fwOut.println(linea);
 					}
+				}
+				
+				if(!lineaActualizada){
+					
+					fwOut.println(linea);
 				}
 			}
 			
@@ -668,9 +669,9 @@ public class PasosDao {
 			
 			f.delete();
 					
-			File newInstrucciones = new File(currentDirectory + "/archivos/INSTRUCCIONES.txt");
+			File newInstrucciones = new File(PATH_INSTRUCCIONES);
 
-			File tmp = new File(currentDirectory + "/archivos/INSTRUCCIONES_tmp.txt");
+			File tmp = new File(PATH_INSTRUCCIONES_TMP);
 			tmp.renameTo(newInstrucciones);
 			
 			tmp.delete();
