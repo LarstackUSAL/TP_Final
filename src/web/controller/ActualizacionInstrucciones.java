@@ -38,7 +38,7 @@ public class ActualizacionInstrucciones extends HttpServlet {
 
 			String codigoProducto = request.getParameter("consultaProducto").trim();
 			PasosDao pasosDao = new PasosDao();
-			ArrayList<Pasos> pasos = pasosDao.getPasosByCodigoProducto(codigoProducto);
+			ArrayList<Pasos> pasos = pasosDao.getPasosByCodigoProducto(codigoProducto, getServletContext().getRealPath("WEB-INF"));
 
 			request.getSession().setAttribute("pasos", pasos);
 			request.setAttribute("mensajeActualizacion", null);
@@ -63,7 +63,7 @@ public class ActualizacionInstrucciones extends HttpServlet {
 				}
 
 				PasosDao pasosDao = new PasosDao();
-				pasosDao.actualizarInstrucciones(pasos);
+				pasosDao.actualizarInstrucciones(pasos, getServletContext().getRealPath("WEB-INF"));
 
 				request.getSession().setAttribute("pasos", null);
 				request.setAttribute("mensajeActualizacion", "Instrucciones actualizadas con exito!");

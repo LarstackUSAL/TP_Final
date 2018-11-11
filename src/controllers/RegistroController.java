@@ -27,12 +27,12 @@ public class RegistroController implements ActionListener {
 		return registroView;
 	}
 
-	public ArrayList<HashMap<String, String>> getPasosAsignadosOperario(Operarios operario) {
+	public ArrayList<HashMap<String, String>> getPasosAsignadosOperario() {
 		
 		PasosDao pasosDao = new PasosDao();
 		OrdenesTrabajosDao ordenesTrabajosDao = new OrdenesTrabajosDao();
 
-		ArrayList<PasosAsignados> pasosList = pasosDao.getPasosAsignadosByOperario(operario);
+		ArrayList<PasosAsignados> pasosList = pasosDao.getPasosAsignadosByOperario();
 		
 		ArrayList<HashMap<String,String>> pasosAsignadosList = new ArrayList<>();
 		

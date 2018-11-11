@@ -29,7 +29,7 @@ public class RegistroView {
 		ventana.setLayout(Constants.ESTILO_LAYOUT);
 		ventana.setLocationRelativeTo(null);
 
-		ArrayList<HashMap<String,String>> pasosList = this.registroController.getPasosAsignadosOperario(null);
+		ArrayList<HashMap<String,String>> pasosList = this.registroController.getPasosAsignadosOperario();
 		
 		for (Iterator iterator = pasosList.iterator(); iterator.hasNext();) {
 			

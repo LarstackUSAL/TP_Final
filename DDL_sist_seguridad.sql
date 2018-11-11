@@ -1,8 +1,8 @@
 --drop table sistema_seguridad_usuario;
 create table sistema_seguridad_usuario(
 	
-	--id serial primary key,
-	id int IDENTITY(1,1) PRIMARY KEY,
+	id serial primary key,
+	--id int IDENTITY(1,1) PRIMARY KEY,
 	usuario varchar(50) not null,
 	password varchar(50) not null
 );
@@ -10,8 +10,8 @@ create table sistema_seguridad_usuario(
 --drop table sistema_seguridad_rol;
 create table sistema_seguridad_rol(
 	
-	--id serial primary key,
-	id int IDENTITY(1,1) PRIMARY KEY,
+	id serial primary key,
+	--id int IDENTITY(1,1) PRIMARY KEY,
 	codigo varchar(50) not null,
 	descripcion varchar(50) not null
 );
@@ -19,8 +19,8 @@ create table sistema_seguridad_rol(
 --drop table sistema_seguridad_usuario_rol;
 create table sistema_seguridad_usuario_rol(
 	
-	--id serial primary key,
-	id int IDENTITY(1,1) PRIMARY KEY,
+	id serial primary key,
+	--id int IDENTITY(1,1) PRIMARY KEY,
 	usuario_id int not null,
 	rol_id int not null,
 	
@@ -31,8 +31,8 @@ create table sistema_seguridad_usuario_rol(
 --drop table sistema_seguridad_usuario_modelo;
 create table sistema_seguridad_usuario_modelo(
 	
-	--id serial primary key,
-	id int IDENTITY(1,1) PRIMARY KEY,
+	id serial primary key,
+	--id int IDENTITY(1,1) PRIMARY KEY,
 	usuario_id int not null,
 	persona_id int not null,
 	

@@ -16,6 +16,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Scanner;
 
+import controllers.LoginController;
 import model.dto.MateriasPrimas;
 import model.dto.MateriasPrimasCantidad;
 import model.dto.Operarios;
@@ -28,8 +29,9 @@ import utils.Utilities;
 
 public class PasosDao {
 
-	private final String PATH_INSTRUCCIONES = "./archivos/INSTRUCCIONES.txt";
-	private final String PATH_INSTRUCCIONES_TMP = "./archivos/INSTRUCCIONES_TMP.txt";
+	private final String PATH_INSTRUCCIONES = "INSTRUCCIONES.txt";
+	private final String PATH_INSTRUCCIONES_TMP = "INSTRUCCIONES_TMP.txt";
+	private final String PATH_INSTRUCCIONES_GUI = "./WebContent/WEB-INF";
 	
 	public ArrayList<Pasos> getPasosByNumeroOT(String numeroOT) {
 
@@ -59,7 +61,7 @@ public class PasosDao {
 				//codigo producto(4-23)
 				//descripcion instruccion(24-63)
 				//codigo materia prima(10 pos) + cantidad(5 pos) (64-73 + 74-78) //se repite segun la cantidad de materias
-				File f = new File(PATH_INSTRUCCIONES);
+				File f = new File(PATH_INSTRUCCIONES_GUI+"/"+PATH_INSTRUCCIONES);
 
 				try {
 
@@ -189,7 +191,7 @@ public class PasosDao {
 				//codigo producto(4-23)
 				//descripcion instruccion(24-63)
 				//codigo materia prima(10 pos) + cantidad(5 pos) (64-73 + 74-78) //se repite segun la cantidad de materias
-				File f = new File(PATH_INSTRUCCIONES);
+				File f = new File(PATH_INSTRUCCIONES_GUI+"/"+PATH_INSTRUCCIONES);
 
 				try {
 
@@ -270,27 +272,32 @@ public class PasosDao {
 		return pasosList;
 	}
 
-	public ArrayList<PasosAsignados> getPasosAsignadosByOperario(Operarios operario) {
+	public ArrayList<PasosAsignados> getPasosAsignadosByOperario() {
 
 		ArrayList<PasosAsignados> pasosList = new ArrayList<>();
 		ProductosDao productosDao = new ProductosDao();
 		MateriasPrimasDao materiasPrimasDao = new MateriasPrimasDao();
 		OperariosDao operariosDao = new OperariosDao();
-
+		
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
 
 		String sql = 
-				"select " +
-						"	otio.instruccion_id as instruccion_id, " +
-						"	otio.operario_id as operario_id, " +
-						"   otio.es_finalizado as es_finalizado, " +
-						"	otio.fecha_inicio as fecha_inicio, " +
-						"	otio.fecha_finalizacion as fecha_finalizacion " +
-						"from orden_trabajo_instruccion_operario otio " +
-						"	inner join orden_trabajo ot on otio.orden_trabajo_id = ot.id " +
-						"where otio.operario_id = " + operario.getId();
+				" select " +
+						" 	otio.instruccion_id as instruccion_id, " +
+						" 	otio.operario_id as operario_id, " +
+						" 	otio.es_finalizado as es_finalizado, " +
+						" 	otio.fecha_inicio as fecha_inicio, " +
+						" 	otio.fecha_finalizacion as fecha_finalizacion" +
+						" from operario o" +
+						" 	inner join persona per on o.legajo = per.legajo" +
+						" 		inner join orden_trabajo_instruccion_operario otio on o.id = otio.operario_id " +
+						" 			inner join orden_trabajo ot on otio.orden_trabajo_id = ot.id" +
+						" 				inner join sistema_seguridad_usuario_modelo um on per.id = um.persona_id" +
+						" 					inner join sistema_seguridad_usuario u on um.usuario_id = u.id" +
+						" where u.usuario = '" + LoginController.USUARIO_LOGUEADO + "'";
+
 
 		try {
 			conn = DbConnection.getConnection();
@@ -305,7 +312,7 @@ public class PasosDao {
 				//codigo producto(4-23)
 				//descripcion instruccion(24-63)
 				//codigo materia prima(10 pos) + cantidad(5 pos) (64-73 + 74-78) //se repite segun la cantidad de materias
-				File f = new File(PATH_INSTRUCCIONES);				
+				File f = new File(PATH_INSTRUCCIONES_GUI+"/"+PATH_INSTRUCCIONES);				
 
 				try {
 
@@ -396,10 +403,10 @@ public class PasosDao {
 		try {
 
 			//PostgrSQL
-			String updatePaso = "update orden_trabajo_instruccion_operario set fecha_inicio=now() where id=" + idPaso;
+			String updatePaso = "update orden_trabajo_instruccion_operario set fecha_inicio=now() where instruccion_id=" + idPaso;
 
 			//SQL Server
-			//			String insertOT = "update orden_trabajo_instruccion_operario set fecha_inicio=getDate() where id =" + idPaso;
+			//			String insertOT = "update orden_trabajo_instruccion_operario set fecha_inicio=getDate() where instruccion_id =" + idPaso;
 
 			stmt = conn.prepareStatement(updatePaso);
 
@@ -490,7 +497,7 @@ public class PasosDao {
 		//codigo producto(4-23)
 		//descripcion instruccion(24-63)
 		//codigo materia prima(10 pos) + cantidad(5 pos) (64-73 + 74-78) //se repite segun la cantidad de materias
-		File f = new File(PATH_INSTRUCCIONES);
+		File f = new File(PATH_INSTRUCCIONES_GUI+"/"+PATH_INSTRUCCIONES);
 
 		try {
 
@@ -540,7 +547,7 @@ public class PasosDao {
 		return paso;
 	}
 
-	public ArrayList<Pasos> getPasosByCodigoProducto(String codigo) {
+	public ArrayList<Pasos> getPasosByCodigoProducto(String codigo, String path) {
 
 		ArrayList<Pasos> pasos = new ArrayList<>();
 		ProductosDao productosDao = new ProductosDao();
@@ -551,7 +558,7 @@ public class PasosDao {
 		//descripcion instruccion(24-63)
 		//codigo materia prima(10 pos) + cantidad(5 pos) (64-73 + 74-78) //se repite segun la cantidad de materias
 
-		File f = new File(PATH_INSTRUCCIONES);
+		File f = new File(path+"/"+PATH_INSTRUCCIONES);
 		
 		try {
 
@@ -602,7 +609,7 @@ public class PasosDao {
 		return pasos;
 	}
 
-	public void actualizarInstrucciones(List<Pasos> pasos) {
+	public void actualizarInstrucciones(List<Pasos> pasos, String path) {
 
 		ProductosDao productosDao = new ProductosDao();
 		MateriasPrimasDao materiasPrimasDao = new MateriasPrimasDao();
@@ -614,8 +621,8 @@ public class PasosDao {
 
 		try {
 
-			File f = new File(PATH_INSTRUCCIONES);
-			FileWriter fw = new FileWriter(PATH_INSTRUCCIONES_TMP);
+			File f = new File(path+"/"+PATH_INSTRUCCIONES);
+			FileWriter fw = new FileWriter(path+"/"+PATH_INSTRUCCIONES_TMP);
 			PrintWriter fwOut = new PrintWriter(fw);
 
 			Scanner s = new Scanner(f);
@@ -669,9 +676,9 @@ public class PasosDao {
 			
 			f.delete();
 					
-			File newInstrucciones = new File(PATH_INSTRUCCIONES);
+			File newInstrucciones = new File(path+"/"+PATH_INSTRUCCIONES);
 
-			File tmp = new File(PATH_INSTRUCCIONES_TMP);
+			File tmp = new File(path+"/"+PATH_INSTRUCCIONES_TMP);
 			tmp.renameTo(newInstrucciones);
 			
 			tmp.delete();

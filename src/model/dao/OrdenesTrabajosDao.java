@@ -138,7 +138,7 @@ public class OrdenesTrabajosDao {
 				"FROM orden_trabajo ot "
 				+ "INNER JOIN producto p ON ot.producto_id = p.id "
 				+ "		left join orden_trabajo_instruccion_operario otio on ot.id = otio.orden_trabajo_id "
-				+ "			inner join usuario u on ot.usuario_alta_id = u.id "
+				+ "			inner join sistema_seguridad_usuario u on ot.usuario_alta_id = u.id "
 				+ "where 1=1 ";
 
 		if(pendientes) {
