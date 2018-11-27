@@ -11,13 +11,8 @@ public class DbConnection {
 	
 //	SQLServer
 
-//	public static String dbDriver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-//	public static String dbServer = "jdbc:sqlserver://localhost:1433;databaseName=db_tp_final;integratedSecurity=true;";
-
-//	PostgreSQL	
-	public static String dbDriver = "org.postgresql.Driver";
-	public static String dbServer = "jdbc:postgresql://localhost:5432/db_tp_final?user=postgres&password=1234";
-
+	public static String dbDriver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+	public static String dbServer = "jdbc:sqlserver://localhost\\SQLEXPRESS;databaseName=db_tp_final;integratedSecurity=true";
 
 	public static Connection getConnection() {
 		
@@ -39,56 +34,31 @@ public class DbConnection {
 		
 		return conn;		
 	}
-	
-	public static void cerrarConexion(Connection conn) {
-		
-		if(conn != null)
-			try {
-				
-				conn.close();
-			
-			} catch (SQLException e) {
-				
-				e.printStackTrace();
-			}
-	}
-	
-	public static void cerrarConexion(ResultSet rs) {
-		
-		if(rs != null) {
-			
-			try {
-			
-				cerrarConexion(rs.getStatement());
-				rs.close();
-
-			} catch (SQLException e) {
-
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	public static void cerrarConexion(Statement stmt) {
-		
-		if(stmt != null) {
-			
-			try {
-				
-				cerrarConexion(stmt.getConnection());
-				stmt.close();
-
-			} catch (SQLException e) {
-
-				e.printStackTrace();
-			}
-		}
-	}
 
 	public static void cerrarConexion(ResultSet rs, Statement stmt, Connection conn) {
 		
-		cerrarConexion(rs);
-		cerrarConexion(stmt);
-		cerrarConexion(conn);
+		if(rs != null)
+			try {
+			
+				rs.close();
+			
+			} catch (SQLException e) {
+			
+				e.printStackTrace();
+			}
+		if(stmt != null)
+			try {
+				stmt.close();
+			} catch (SQLException e) {
+
+				e.printStackTrace();
+			}
+		if(conn != null)
+			try {
+				conn.close();
+			} catch (SQLException e) {
+
+				e.printStackTrace();
+			}
 	}
 }

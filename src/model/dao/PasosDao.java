@@ -114,9 +114,7 @@ public class PasosDao {
 			e.printStackTrace();
 		}finally {
 
-			DbConnection.cerrarConexion(rs);
-			DbConnection.cerrarConexion(stmt);
-			DbConnection.cerrarConexion(conn);
+			DbConnection.cerrarConexion(rs, stmt, conn);
 		}
 		return pasosList;
 	}
@@ -129,19 +127,21 @@ public class PasosDao {
 		PreparedStatement stmt = null;
 
 		try {
-
-			String insertOT = "insert into orden_trabajo_instruccion_operario( " +
+			
+			String insertOT = "insert into orden_trabajo_instruccion_persona( " +
 					"orden_trabajo_id, " +
 					"instruccion_id, " +
-					"operario_id " +
+					"persona_id,"
+					+ "usuario_asignacion_id " +
 					") "
-					+ " values(?, ?, ?) ";
+					+ " select ?, ?, ?, id from SISTEMA_SEGURIDAD_USUARIO where USUARIO = ?";
 
 			stmt = conn.prepareStatement(insertOT);
 
 			stmt.setInt(1, ot.getId());
 			stmt.setInt(2, paso.getId());
 			stmt.setInt(3, operario.getId());
+			stmt.setString(4, LoginController.USUARIO_LOGUEADO);
 
 			persistenciaOk = stmt.executeUpdate() > 0 ? true : false;
 
@@ -170,11 +170,11 @@ public class PasosDao {
 		String sql = 
 				"select " +
 						"	otio.instruccion_id as instruccion_id, " +
-						"	otio.operario_id as operario_id, " +
+						"	otio.persona_id as operario_id, " +
 						"   otio.es_finalizado as es_finalizado, " +
 						"	otio.fecha_inicio as fecha_inicio, " +
 						"	otio.fecha_finalizacion as fecha_finalizacion " +
-						"from orden_trabajo_instruccion_operario otio " +
+						"from orden_trabajo_instruccion_persona otio " +
 						"	inner join orden_trabajo ot on otio.orden_trabajo_id = ot.id " +
 						"where ot.numero = '" + numero + "'";
 
@@ -265,9 +265,7 @@ public class PasosDao {
 			e.printStackTrace();
 		}finally {
 
-			DbConnection.cerrarConexion(rs);
-			DbConnection.cerrarConexion(stmt);
-			DbConnection.cerrarConexion(conn);
+			DbConnection.cerrarConexion(rs, stmt, conn);
 		}
 		return pasosList;
 	}
@@ -286,13 +284,12 @@ public class PasosDao {
 		String sql = 
 				" select " +
 						" 	otio.instruccion_id as instruccion_id, " +
-						" 	otio.operario_id as operario_id, " +
+						" 	otio.persona_id as operario_id, " +
 						" 	otio.es_finalizado as es_finalizado, " +
 						" 	otio.fecha_inicio as fecha_inicio, " +
 						" 	otio.fecha_finalizacion as fecha_finalizacion" +
-						" from operario o" +
-						" 	inner join persona per on o.legajo = per.legajo" +
-						" 		inner join orden_trabajo_instruccion_operario otio on o.id = otio.operario_id " +
+						" from persona per " +
+						" 		inner join orden_trabajo_instruccion_persona otio on per.id = otio.persona_id " +
 						" 			inner join orden_trabajo ot on otio.orden_trabajo_id = ot.id" +
 						" 				inner join sistema_seguridad_usuario_modelo um on per.id = um.persona_id" +
 						" 					inner join sistema_seguridad_usuario u on um.usuario_id = u.id" +
@@ -386,9 +383,7 @@ public class PasosDao {
 			e.printStackTrace();
 		}finally {
 
-			DbConnection.cerrarConexion(rs);
-			DbConnection.cerrarConexion(stmt);
-			DbConnection.cerrarConexion(conn);
+			DbConnection.cerrarConexion(rs, stmt, conn);
 		}
 		return pasosList;
 	}
@@ -402,11 +397,7 @@ public class PasosDao {
 
 		try {
 
-			//PostgrSQL
-			String updatePaso = "update orden_trabajo_instruccion_operario set fecha_inicio=now() where instruccion_id=" + idPaso;
-
-			//SQL Server
-			//			String insertOT = "update orden_trabajo_instruccion_operario set fecha_inicio=getDate() where instruccion_id =" + idPaso;
+			String updatePaso = "update orden_trabajo_instruccion_persona set fecha_inicio=getDate() where instruccion_id=" + idPaso;
 
 			stmt = conn.prepareStatement(updatePaso);
 
@@ -434,11 +425,7 @@ public class PasosDao {
 
 			conn.setAutoCommit(false);
 
-			//PostgrSQL
-			String updatePaso = "update orden_trabajo_instruccion_operario set fecha_finalizacion=now(), es_finalizado=true where id=" + idPaso;
-
-			//SQL Server
-			//			String insertOT = "update orden_trabajo_instruccion_operario set fecha_finalizacion=getDate(), es_finalizado=true where id =" + idPaso;
+			String updatePaso = "update orden_trabajo_instruccion_persona set fecha_finalizacion=getDate(), es_finalizado=1 where instruccion_id=" + idPaso;
 
 			stmtPaso = conn.prepareStatement(updatePaso);
 
@@ -450,7 +437,7 @@ public class PasosDao {
 				OrdenesTrabajos ordenTrabajo = ordenesTrabajosDao.getOrdenTrabajoByPaso(this.getPasoById(idPaso));
 
 				String sql = "select count(*) as total " +
-						"from orden_trabajo_instruccion_operario otio " +
+						"from orden_trabajo_instruccion_persona otio " +
 						"where otio.orden_trabajo_id = " + ordenTrabajo.getId() +
 						"	and fecha_finalizacion is null";
 
@@ -464,7 +451,7 @@ public class PasosDao {
 
 					if(total == 0) {
 
-						String updateOt = "update orden_trabajo set fecha_finalizacion=now() where id=" + ordenTrabajo.getId();
+						String updateOt = "update orden_trabajo set fecha_finalizacion=getDate() where id=" + ordenTrabajo.getId();
 
 						PreparedStatement stmtOt = conn.prepareStatement(updateOt);
 

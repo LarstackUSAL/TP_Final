@@ -137,7 +137,7 @@ public class OrdenesTrabajosDao {
 				"u.usuario " +
 				"FROM orden_trabajo ot "
 				+ "INNER JOIN producto p ON ot.producto_id = p.id "
-				+ "		left join orden_trabajo_instruccion_operario otio on ot.id = otio.orden_trabajo_id "
+				+ "		left join orden_trabajo_instruccion_persona otio on ot.id = otio.orden_trabajo_id "
 				+ "			inner join sistema_seguridad_usuario u on ot.usuario_alta_id = u.id "
 				+ "where 1=1 ";
 
@@ -220,10 +220,10 @@ public class OrdenesTrabajosDao {
 				"ot.descripcion, " +
 				"ot.es_urgente " +
 				"FROM orden_trabajo ot "
-				+ "	inner join orden_trabajo_instruccion_operario otio on ot.id = otio.orden_trabajo_id "
+				+ "	inner join orden_trabajo_instruccion_persona otio on ot.id = otio.orden_trabajo_id "
 				+ "	inner join producto p on ot.producto_id = p.id "
 				+ "where otio.instruccion_id =  " + paso.getId();
-
+//EN EL WHERE ES DONDE SE CUELGA LA QUERY !!! 
 		try {
 
 			stmt = conn.createStatement();

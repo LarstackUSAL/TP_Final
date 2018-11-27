@@ -24,7 +24,7 @@ public class OperariosDao {
 				"nombre, " +
 				"apellido, " +
 				"legajo " +
-				"FROM operario ";
+				"FROM persona ";
 
 		try {
 			
@@ -72,7 +72,7 @@ public class OperariosDao {
 				"nombre, " +
 				"apellido, " +
 				"legajo " +
-				"FROM operario "
+				"FROM persona "
 				+ "WHERE id = " + id;
 
 		try {

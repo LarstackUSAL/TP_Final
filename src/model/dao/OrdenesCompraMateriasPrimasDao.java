@@ -22,7 +22,7 @@ public class OrdenesCompraMateriasPrimasDao {
 					"es_exterior, " +
 					"deposito_1, " +
 					"deposito_2, " +
-					"deposito_3, " +
+					"deposito_3 " +
 					") " +
 					"values(?,?,?,?,?,?)";
 
@@ -38,7 +38,8 @@ public class OrdenesCompraMateriasPrimasDao {
 			persistenciaOk = stmt.executeUpdate() > 0 ? true : false;
 
 		} catch (Exception e) {
-
+			
+			e.printStackTrace();
 
 		}finally {
 

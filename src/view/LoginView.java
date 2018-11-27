@@ -34,7 +34,7 @@ public class LoginView {
 		usuarioTextField.setCaretPosition(SwingConstants.CENTER);
 		usuarioTextField.setHorizontalAlignment(JTextField.CENTER);
 		
-		pswLabel = new JLabel("ContraseÃ±a:");
+		pswLabel = new JLabel("Contraseña:");
 		pswTextField = new JPasswordField(Constants.TEXTO_ANCHO);
 		pswTextField.setCaretPosition(SwingConstants.CENTER);
 		pswTextField.setHorizontalAlignment(JTextField.CENTER);

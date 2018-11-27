@@ -101,6 +101,7 @@ function validateNumber(numero){
 		<%}%>
 	
 	</table>
+	<br/>
 	<input type="button" value="Actualizar" onclick="submitForm(false);" />
 		
 	<% request.getSession().setAttribute("pasos",pasos); } %>
